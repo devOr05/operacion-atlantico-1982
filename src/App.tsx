@@ -25,6 +25,15 @@ export const App: React.FC = () => {
           {stage === 'ranking' && <RankingScreen />}
         </main>
 
+        {/* Pie de página */}
+        <footer className="py-1 px-3 bg-black/90 border-t border-[var(--crt-dim,#1f6b30)] flex items-center justify-between text-[11px] text-zinc-500 font-mono-military z-20 select-none">
+          <span className="hidden sm:inline text-[10px] text-[var(--crt-dim,#1f6b30)]">HÉROES DEL ATLÁNTICO 1982</span>
+          <span className="mx-auto sm:mx-0">
+            Desarrollado por <a href="https://instagram.com/taller_it_" target="_blank" rel="noopener noreferrer" className="text-[var(--crt-primary,#55ff77)] font-bold hover:underline glow-text">@taller_it_</a>
+          </span>
+          <span className="hidden sm:inline text-[10px] text-[var(--crt-dim,#1f6b30)]">PWA 100% OFFLINE</span>
+        </footer>
+
         {/* Modal de Dossier Histórico 1982 */}
         <DossierModal />
       </div>
