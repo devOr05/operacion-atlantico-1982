@@ -6,6 +6,7 @@ import { CoperoCard } from './components/gameplay/CoperoCard';
 import { CareerSummary } from './components/gameplay/CareerSummary';
 import { RankingScreen } from './components/ranking/RankingScreen';
 import { DossierModal } from './components/teletype/DossierModal';
+import { TacticalMapModal } from './components/map/TacticalMapModal';
 import { useGameStore } from './core/state/gameStore';
 
 export const App: React.FC = () => {
@@ -36,6 +37,9 @@ export const App: React.FC = () => {
 
         {/* Modal de Dossier Histórico 1982 */}
         <DossierModal />
+
+        {/* Modal de Mapa Táctico Radar 1982 */}
+        <TacticalMapModal />
       </div>
     </CrtScreen>
   );

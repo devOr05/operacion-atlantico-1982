@@ -171,7 +171,7 @@ export const CoperoCard: React.FC = () => {
           <div className="text-[10px] font-bold text-zinc-500 uppercase">
             ¿QUÉ DECISIÓN TOMÁS?
           </div>
-          {currentStep.choices.map((choice, idx) => (
+          {currentStep.choices.map((choice: any, idx: number) => (
             <button
               key={idx}
               onClick={() => gameStore.makeDecision(idx)}

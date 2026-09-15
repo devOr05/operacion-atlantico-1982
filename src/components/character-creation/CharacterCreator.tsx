@@ -12,7 +12,8 @@ import {
   Radio,
   Users,
   Crosshair,
-  Flag
+  Flag,
+  Compass
 } from 'lucide-react';
 import { type MilitaryBranch, ARGENTINE_PROVINCES, RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
 import { getRankTierFromIndex, type RankTier } from '../../core/story/campaigns/campaignTypes';
@@ -131,11 +132,21 @@ export const CharacterCreator: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded bg-emerald-950/70 border border-emerald-500/60">
-            <Users className="w-4 h-4 text-yellow-400" />
-            <span className="font-chakra font-bold text-base sm:text-lg text-[var(--crt-primary,#55ff77)] glow-text tracking-widest">
-              {enlistedCount.toLocaleString('es-AR')}
-            </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1 rounded bg-emerald-950/70 border border-emerald-500/60">
+              <Users className="w-4 h-4 text-yellow-400" />
+              <span className="font-chakra font-bold text-base sm:text-lg text-[var(--crt-primary,#55ff77)] glow-text tracking-widest">
+                {enlistedCount.toLocaleString('es-AR')}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => gameStore.setMapModalOpen(true)}
+              className="px-2.5 py-1.5 rounded border border-amber-500/70 bg-amber-950/40 text-amber-300 hover:text-amber-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-[0_0_8px_rgba(245,158,11,0.25)]"
+            >
+              <Compass className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '10s' }} />
+              <span>VER MAPA RADAR</span>
+            </button>
           </div>
         </div>
 

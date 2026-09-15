@@ -1,4 +1,6 @@
 import { type CampaignStep, type RankTier } from './campaignTypes';
+export { type CampaignStep, type RankTier };
+
 
 // ============================================================================
 // 1. CAMPAÑA DE TROPA / CONSCRIPTO (SOLDADO CLASE 62/63)

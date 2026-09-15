@@ -138,6 +138,7 @@ export interface CoperoGameState {
   scanlinesEnabled: boolean;
   isMuted: boolean;
   dossierOpen: boolean;
+  mapModalOpen: boolean;
 }
 
 const DEFAULT_PLAYER: PlayerProfile = {
@@ -170,7 +171,8 @@ const INITIAL_STATE: CoperoGameState = {
   crtMode: 'green',
   scanlinesEnabled: true,
   isMuted: false,
-  dossierOpen: false
+  dossierOpen: false,
+  mapModalOpen: false
 };
 
 let state: CoperoGameState = { ...INITIAL_STATE };
@@ -401,6 +403,12 @@ export const gameStore = {
   setDossierOpen: (open: boolean) => {
     soundFx.playSwitchClick();
     state = { ...state, dossierOpen: open };
+    emitChange();
+  },
+
+  setMapModalOpen: (open: boolean) => {
+    soundFx.playSwitchClick();
+    state = { ...state, mapModalOpen: open };
     emitChange();
   }
 };

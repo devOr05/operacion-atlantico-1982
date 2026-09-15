@@ -5,7 +5,8 @@ import {
   VolumeX, 
   Tv, 
   BookOpen, 
-  Medal 
+  Medal,
+  Compass 
 } from 'lucide-react';
 import { useGameStore, gameStore } from '../../core/state/gameStore';
 import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
@@ -113,13 +114,23 @@ export const CommandHeader: React.FC = () => {
           {state.isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
         </button>
 
+        {/* Botón de Mapa Radar TOAS */}
+        <button
+          onClick={() => gameStore.setMapModalOpen(!state.mapModalOpen)}
+          className="flex items-center gap-1 px-2.5 py-1 text-xs tactical-btn rounded border border-amber-500/80 bg-amber-950/30 text-amber-300 hover:text-amber-200 shadow-[0_0_8px_rgba(245,158,11,0.25)]"
+          title="Ver Mapa Táctico del Teatro de Operaciones"
+        >
+          <Compass className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '10s' }} />
+          <span className="font-bold">RADAR TOAS</span>
+        </button>
+
         {/* Botón de Dossier de Inteligencia */}
         <button
           onClick={() => gameStore.setDossierOpen(!dossierOpen)}
           className="flex items-center gap-1 px-2 py-1 text-xs tactical-btn rounded border border-[var(--crt-primary,#55ff77)]"
         >
           <BookOpen className="w-3.5 h-3.5 text-[var(--crt-primary,#55ff77)]" />
-          <span className="hidden sm:inline font-bold">DOSSIER 1982</span>
+          <span className="hidden sm:inline font-bold">DOSSIER</span>
         </button>
       </div>
     </header>
