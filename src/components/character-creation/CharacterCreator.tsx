@@ -27,14 +27,12 @@ export const CharacterCreator: React.FC = () => {
   const [province, setProvince] = useState(ARGENTINE_PROVINCES[0]);
   const [branch, setBranch] = useState<MilitaryBranch>('tierra');
   const [chosenRankIndex, setChosenRankIndex] = useState<number>(0);
-  const [enlistedCount, setEnlistedCount] = useState<number>(1582);
+  const [enlistedCount, setEnlistedCount] = useState<number | null>(null);
 
-  // Cargar contador global de combatientes alistados
+  // Cargar contador global real de combatientes alistados directamente desde Supabase
   useEffect(() => {
     getGlobalCombatientesCount().then((count) => {
-      if (count && count > 0) {
-        setEnlistedCount(count);
-      }
+      setEnlistedCount(count);
     });
   }, []);
 
@@ -136,7 +134,7 @@ export const CharacterCreator: React.FC = () => {
             <div className="flex items-center gap-2 px-3 py-1 rounded bg-emerald-950/70 border border-emerald-500/60">
               <Users className="w-4 h-4 text-yellow-400" />
               <span className="font-chakra font-bold text-base sm:text-lg text-[var(--crt-primary,#55ff77)] glow-text tracking-widest">
-                {enlistedCount.toLocaleString('es-AR')}
+                {enlistedCount !== null ? enlistedCount.toLocaleString('es-AR') : '...'}
               </span>
             </div>
             <button

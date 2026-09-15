@@ -11,14 +11,10 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
 
-const LOCAL_STORAGE_VISITS = 'heroes_1982_combatientes_count';
-const BASELINE_COUNT = 1582; // Número base de combatientes movilizados al TOAS
-
 /**
- * Obtiene el contador global de combatientes alistados
+ * Obtiene el contador global real de combatientes alistados desde Supabase
  */
 export async function getGlobalCombatientesCount(): Promise<number> {
-  // 1. Si Supabase está conectado
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -27,74 +23,43 @@ export async function getGlobalCombatientesCount(): Promise<number> {
         .eq('id', 'toas_1982')
         .single();
 
-      if (!error && data) {
-        localStorage.setItem(LOCAL_STORAGE_VISITS, data.enlisted_count.toString());
+      if (!error && data && typeof data.enlisted_count === 'number') {
         return data.enlisted_count;
       }
     } catch (e) {
-      console.warn('Fallo al consultar contador en Supabase, usando respaldo:', e);
+      console.error('Error al consultar contador real en Supabase:', e);
     }
   }
 
-  // 2. Intentar contador público en la nube (CounterAPI)
-  try {
-    const res = await fetch('https://api.counterapi.dev/v1/heroes-atlantico-1982/combatientes');
-    if (res.ok) {
-      const json = await res.json();
-      if (json && typeof json.count === 'number') {
-        const total = BASELINE_COUNT + json.count;
-        localStorage.setItem(LOCAL_STORAGE_VISITS, total.toString());
-        return total;
-      }
-    }
-  } catch {
-    // Si no hay red, usar valor guardado
-  }
-
-  // 3. Respaldo local
-  const saved = localStorage.getItem(LOCAL_STORAGE_VISITS);
-  return saved ? parseInt(saved, 10) : BASELINE_COUNT;
+  return 0;
 }
 
 /**
- * Incrementa el contador global cuando un nuevo combatiente inicia su campaña
+ * Incrementa el contador global real en Supabase cuando un nuevo combatiente inicia su campaña
  */
 export async function incrementGlobalCombatientes(): Promise<number> {
-  // 1. Si Supabase está conectado
   if (supabase) {
     try {
+      // Usar la función RPC o consultar y sumar 1 directamente en la tabla
       const current = await getGlobalCombatientesCount();
       const next = current + 1;
-      await supabase
+      
+      const { data, error } = await supabase
         .from('global_stats')
-        .upsert({ id: 'toas_1982', enlisted_count: next });
-      localStorage.setItem(LOCAL_STORAGE_VISITS, next.toString());
+        .upsert({ id: 'toas_1982', enlisted_count: next })
+        .select('enlisted_count')
+        .single();
+
+      if (!error && data) {
+        return data.enlisted_count;
+      }
       return next;
     } catch (e) {
-      console.warn('Error incrementando en Supabase:', e);
+      console.error('Error incrementando contador real en Supabase:', e);
     }
   }
 
-  // 2. Incrementar en CounterAPI
-  try {
-    const res = await fetch('https://api.counterapi.dev/v1/heroes-atlantico-1982/combatientes/up');
-    if (res.ok) {
-      const json = await res.json();
-      if (json && typeof json.count === 'number') {
-        const total = BASELINE_COUNT + json.count;
-        localStorage.setItem(LOCAL_STORAGE_VISITS, total.toString());
-        return total;
-      }
-    }
-  } catch {
-    // Silencioso
-  }
-
-  // 3. Respaldo local incrementado
-  const current = parseInt(localStorage.getItem(LOCAL_STORAGE_VISITS) || `${BASELINE_COUNT}`, 10);
-  const updated = current + 1;
-  localStorage.setItem(LOCAL_STORAGE_VISITS, updated.toString());
-  return updated;
+  return 0;
 }
 
 /**
