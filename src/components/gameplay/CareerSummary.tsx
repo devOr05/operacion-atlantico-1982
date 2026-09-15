@@ -3,7 +3,8 @@ import {
   Medal, 
   Award, 
   RotateCcw, 
-  MapPin 
+  MapPin, 
+  Trophy 
 } from 'lucide-react';
 import { useGameStore, gameStore } from '../../core/state/gameStore';
 import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
@@ -160,14 +161,22 @@ export const CareerSummary: React.FC = () => {
           </div>
         </div>
 
-        {/* Botón para Reiniciar y Jugar con otra Fuerza / Rango */}
-        <div className="pt-1">
+        {/* Botones de Acción */}
+        <div className="pt-1 space-y-2">
           <button
             onClick={() => gameStore.restartGame()}
-            className="w-full py-3 px-4 rounded font-chakra font-bold text-sm sm:text-base uppercase tracking-wider tactical-btn flex items-center justify-center gap-2 border-2 border-[var(--crt-primary,#55ff77)] shadow-[0_0_15px_var(--crt-glow)]"
+            className="w-full py-2.5 px-4 rounded font-chakra font-bold text-xs sm:text-sm uppercase tracking-wider tactical-btn flex items-center justify-center gap-2 border border-[var(--crt-primary,#55ff77)]"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>JUGAR OTRA CARRERA CON OTRA FUERZA Y OTRO RANGO</span>
+            <span>JUGAR OTRA VEZ CON OTRA FUERZA Y OTRO RANGO</span>
+          </button>
+
+          <button
+            onClick={() => gameStore.goToRanking()}
+            className="w-full py-2.5 px-4 rounded font-chakra font-bold text-xs sm:text-sm uppercase tracking-wider bg-amber-950/60 border-2 border-amber-500 text-amber-300 hover:bg-amber-900/60 transition-all flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(255,180,0,0.3)]"
+          >
+            <Trophy className="w-4 h-4 text-yellow-400" />
+            <span>FINALIZAR JUEGO (VER RANKING)</span>
           </button>
         </div>
 

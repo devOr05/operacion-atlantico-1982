@@ -13,7 +13,7 @@ export interface PlayerStats {
   impactoGuerra: number; // 0-100: Impacto estratégico en el conflicto
 }
 
-export type GameStage = 'creation' | 'playing' | 'summary';
+export type GameStage = 'creation' | 'playing' | 'summary' | 'ranking';
 export type WarOutcome = 
   | 'victoria_total' 
   | 'armisticio_honroso' 
@@ -41,6 +41,81 @@ export interface PlayerProfile {
   stats: PlayerStats;
   medals: string[];
   history: DecisionLog[];
+}
+
+export interface RankingEntry {
+  id: string;
+  name: string;
+  nickname: string;
+  province: string;
+  branch: MilitaryBranch;
+  rankTitle: string;
+  warOutcome: WarOutcome;
+  score: number;
+  medalsCount: number;
+  date: string;
+}
+
+const RANKING_STORAGE_KEY = 'heroes_atlantico_1982_rankings';
+
+export function getRankings(): RankingEntry[] {
+  try {
+    const raw = localStorage.getItem(RANKING_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.error(e);
+  }
+  return [
+    {
+      id: 'legend-1',
+      name: 'Roberto Curilovic',
+      nickname: 'Vasco',
+      province: 'Buenos Aires',
+      branch: 'mar',
+      rankTitle: 'Capitán de Navío',
+      warOutcome: 'victoria_total',
+      score: 285,
+      medalsCount: 3,
+      date: '25/05/1982'
+    },
+    {
+      id: 'legend-2',
+      name: 'Juan Domingo Baldini',
+      nickname: 'Cóndor-7',
+      province: 'Buenos Aires',
+      branch: 'tierra',
+      rankTitle: 'Teniente Primero',
+      warOutcome: 'caido_en_combate',
+      score: 260,
+      medalsCount: 2,
+      date: '11/06/1982'
+    },
+    {
+      id: 'legend-3',
+      name: 'Owen Crippa',
+      nickname: 'Lechuza',
+      province: 'Santa Fe',
+      branch: 'aire',
+      rankTitle: 'Capitán de Caza',
+      warOutcome: 'armisticio_honroso',
+      score: 245,
+      medalsCount: 2,
+      date: '21/05/1982'
+    }
+  ];
+}
+
+export function saveRankingEntry(entry: RankingEntry) {
+  try {
+    const list = getRankings();
+    // Reemplazar si existe el mismo ID
+    const filtered = list.filter(r => r.id !== entry.id);
+    filtered.push(entry);
+    filtered.sort((a, b) => b.score - a.score);
+    localStorage.setItem(RANKING_STORAGE_KEY, JSON.stringify(filtered.slice(0, 50)));
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 export interface CoperoGameState {
@@ -118,7 +193,6 @@ export const gameStore = {
   ) => {
     soundFx.playCommandConfirm();
     
-    // Si elige Alto Mando, arranca como General de Brigada / Brigadier / Contraalmirante (index 9)
     const initialRankIndex = startLevel === 'alto_mando' ? 9 : 0;
     const initialImpact = startLevel === 'alto_mando' ? 25 : 5;
     const initialLeadership = startLevel === 'alto_mando' ? 75 : 45;
@@ -140,7 +214,7 @@ export const gameStore = {
         currentRankIndex: initialRankIndex,
         stats: {
           coraje: 55,
-          salud: 50, // Salud balanceada, no inflada
+          salud: 50,
           pericia: 50,
           liderazgo: initialLeadership,
           impactoGuerra: initialImpact
@@ -160,7 +234,6 @@ export const gameStore = {
     const choice = step.choices[choiceIndex];
     if (!choice) return;
 
-    // Sonido según el peligro del evento
     if (choice.soundEffect === 'alert') {
       soundFx.playRedAlert();
     } else if (choice.soundEffect === 'radio') {
@@ -169,7 +242,6 @@ export const gameStore = {
       soundFx.playCommandConfirm();
     }
 
-    // Actualizar estadísticas con límites (0 - 100)
     const newStats: PlayerStats = {
       coraje: Math.max(0, Math.min(100, state.player.stats.coraje + (choice.changes.coraje || 0))),
       salud: Math.max(0, Math.min(100, state.player.stats.salud + (choice.changes.salud || 0))),
@@ -178,7 +250,6 @@ export const gameStore = {
       impactoGuerra: Math.max(0, Math.min(100, state.player.stats.impactoGuerra + (choice.changes.impactoGuerra || 0)))
     };
 
-    // Ascenso de rango militar si corresponde
     let newRankIndex = state.player.currentRankIndex;
     if (choice.promotedToRankIndex !== undefined && choice.promotedToRankIndex > newRankIndex) {
       newRankIndex = choice.promotedToRankIndex;
@@ -186,7 +257,6 @@ export const gameStore = {
       newRankIndex = Math.min(10, newRankIndex + 1);
     }
 
-    // Nuevas medallas si se ganaron
     const newMedals = [...state.player.medals];
     if (choice.medalAwarded && !newMedals.includes(choice.medalAwarded)) {
       newMedals.push(choice.medalAwarded);
@@ -204,37 +274,48 @@ export const gameStore = {
 
     const nextStepIndex = state.currentStepIndex + 1;
 
-    // EVALUACIÓN DE CONDICIONES DE FIN DE PARTIDA Y MUERTE INMEDIATA:
     let isGameOver = false;
     let outcome: WarOutcome | null = null;
     let casualtyMsg: string | null = null;
 
-    // 1. Muerte Inmediata por Agotamiento de Salud (en cualquier momento)
     if (newStats.salud <= 0) {
       isGameOver = true;
       outcome = 'caido_en_combate';
       casualtyMsg = (choice as any).fatalText || `Caíste en combate el ${step.date} en ${step.location} como consecuencia directa de las heridas recibidas en la acción.`;
-    } 
-    // 2. Destitución por Cobardía Extrema
-    else if (newStats.coraje <= 10) {
+    } else if (newStats.coraje <= 10) {
       isGameOver = true;
       outcome = 'corte_marcial';
       casualtyMsg = 'Relevado de tus funciones en el frente por quiebre de disciplina y deserción ante el fuego enemigo.';
-    }
-    // 3. Fin Natural de la Campaña
-    else if (nextStepIndex >= campaign.length) {
+    } else if (nextStepIndex >= campaign.length) {
       isGameOver = true;
       if (newStats.salud <= 20) {
         outcome = 'evacuado_herido';
       } else if (newStats.impactoGuerra >= 70 && newStats.pericia >= 70) {
-        outcome = 'victoria_total'; // Exclusivo y difícil
+        outcome = 'victoria_total';
       } else if (newStats.impactoGuerra >= 45) {
         outcome = 'armisticio_honroso';
       } else if (newStats.liderazgo <= 20) {
         outcome = 'prisionero_guerra';
       } else {
-        outcome = 'derrota_historica'; // El final real del 14 de junio si se juega de forma común
+        outcome = 'derrota_historica';
       }
+    }
+
+    // Si terminó la partida, guardar en ranking
+    if (isGameOver && outcome) {
+      const totalScore = newStats.coraje + newStats.salud + newStats.pericia + newStats.liderazgo + (newStats.impactoGuerra * 2);
+      saveRankingEntry({
+        id: `run-${Date.now()}`,
+        name: state.player.name,
+        nickname: state.player.nickname,
+        province: state.player.province,
+        branch: state.player.branch,
+        rankTitle: currentRank,
+        warOutcome: outcome,
+        score: totalScore,
+        medalsCount: newMedals.length,
+        date: new Date().toLocaleDateString('es-AR')
+      });
     }
 
     state = {
@@ -254,6 +335,12 @@ export const gameStore = {
       }
     };
 
+    emitChange();
+  },
+
+  goToRanking: () => {
+    soundFx.playCommandConfirm();
+    state = { ...state, stage: 'ranking' };
     emitChange();
   },
 

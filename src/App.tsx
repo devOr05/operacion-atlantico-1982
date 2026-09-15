@@ -4,6 +4,7 @@ import { CommandHeader } from './components/war-room/CommandHeader';
 import { CharacterCreator } from './components/character-creation/CharacterCreator';
 import { CoperoCard } from './components/gameplay/CoperoCard';
 import { CareerSummary } from './components/gameplay/CareerSummary';
+import { RankingScreen } from './components/ranking/RankingScreen';
 import { DossierModal } from './components/teletype/DossierModal';
 import { useGameStore } from './core/state/gameStore';
 
@@ -21,6 +22,7 @@ export const App: React.FC = () => {
           {stage === 'creation' && <CharacterCreator />}
           {stage === 'playing' && <CoperoCard />}
           {stage === 'summary' && <CareerSummary />}
+          {stage === 'ranking' && <RankingScreen />}
         </main>
 
         {/* Modal de Dossier Histórico 1982 */}
