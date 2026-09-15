@@ -7,7 +7,6 @@ import {
   Plane, 
   Anchor,
   Globe,
-  HardDrive,
   RefreshCw,
   Radio
 } from 'lucide-react';
@@ -15,28 +14,24 @@ import { gameStore, getRankings, type RankingEntry } from '../../core/state/game
 import { fetchGlobalRankings, isSupabaseConfigured } from '../../services/supabase';
 
 export const RankingScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'global' | 'local'>('global');
-  const [globalRankings, setGlobalRankings] = useState<RankingEntry[]>([]);
-  const [loadingGlobal, setLoadingGlobal] = useState<boolean>(true);
-  const localRankings = getRankings();
+  const [rankings, setRankings] = useState<RankingEntry[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const loadGlobal = async () => {
-    setLoadingGlobal(true);
+    setLoading(true);
     const data = await fetchGlobalRankings();
     if (data && data.length > 0) {
-      setGlobalRankings(data);
+      setRankings(data);
     } else {
-      // Si no hay datos aún en Supabase o no está configurado, usar los récords locales y leyendas
-      setGlobalRankings(localRankings);
+      // Si no hay respuesta remota aún, mostrar lista inicial
+      setRankings(getRankings());
     }
-    setLoadingGlobal(false);
+    setLoading(false);
   };
 
   useEffect(() => {
     loadGlobal();
   }, []);
-
-  const displayRankings = activeTab === 'global' ? globalRankings : localRankings;
 
   const getBranchIcon = (branch: string) => {
     if (branch === 'aire') return <Plane className="w-3.5 h-3.5 text-sky-400" />;
@@ -73,68 +68,56 @@ export const RankingScreen: React.FC = () => {
             <Trophy className="w-3.5 h-3.5 text-yellow-400" />
             CUADRO DE HONOR Y SALÓN DE LA GLORIA 1982
           </div>
-          <h1 className="text-lg sm:text-2xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
-            RANKING DE COMBATIENTES
+          <h1 className="text-xl sm:text-3xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
+            TOP 1.000 GLOBAL ONLINE
           </h1>
           <p className="text-xs text-zinc-400">
-            CLASIFICACIÓN EN VIVO DE LOS VETERANOS Y ESTRATEGAS DEL ATLÁNTICO SUR
+            TABLA DE POSICIONES EN VIVO COMPARTIDA ENTRE TODOS LOS JUGADORES DEL MUNDO
           </p>
         </div>
 
-        {/* Pestañas: Global Online vs Local */}
-        <div className="flex items-center justify-between gap-2 border-b border-[var(--crt-dim,#1f6b30)] pb-2">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab('global')}
-              className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition-all ${
-                activeTab === 'global'
-                  ? 'bg-amber-950/60 border border-amber-500 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)]'
-                  : 'bg-black/50 border border-zinc-800 text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5 text-amber-400" />
-              <span>TOP 1000 GLOBAL (EN LÍNEA)</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('local')}
-              className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition-all ${
-                activeTab === 'local'
-                  ? 'bg-emerald-950/60 border border-emerald-500 text-emerald-300 shadow-[0_0_8px_rgba(85,255,119,0.3)]'
-                  : 'bg-black/50 border border-zinc-800 text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              <HardDrive className="w-3.5 h-3.5 text-emerald-400" />
-              <span>MIS RÉCORDS LOCALES</span>
-            </button>
+        {/* Barra de control y estado de red */}
+        <div className="flex items-center justify-between gap-2 border-b border-[var(--crt-dim,#1f6b30)] pb-2.5">
+          <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-amber-950/50 border border-amber-500/70 text-amber-300 font-bold">
+              <Globe className="w-4 h-4 text-amber-400" />
+              <span>TOP 1.000 EN LÍNEA</span>
+            </div>
+            <span className="text-[10px] text-zinc-500 hidden sm:inline">
+              • {rankings.length} COMBATIENTES EN EL REGISTRO
+            </span>
           </div>
 
-          <button
-            onClick={loadGlobal}
-            title="Actualizar ranking"
-            className="p-1.5 rounded bg-black/60 border border-[var(--crt-dim,#1f6b30)] hover:border-[var(--crt-primary,#55ff77)] text-zinc-300"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loadingGlobal ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
+              <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
+              <span className="hidden md:inline">{isSupabaseConfigured ? 'SUPABASE' : 'RED GLOBAL'} ACTIVA</span>
+            </span>
 
-        {/* Estado de conexión */}
-        <div className="flex items-center justify-between text-[10px] text-zinc-500 px-1">
-          <span className="flex items-center gap-1.5 text-emerald-400">
-            <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-            {isSupabaseConfigured ? 'BASE DE DATOS SUPABASE CONECTADA' : 'RED GLOBAL ACTIVA • MODO PWA RESILIENTE'}
-          </span>
-          <span>{displayRankings.length} PARTIDAS REGISTRADAS</span>
+            <button
+              onClick={loadGlobal}
+              title="Actualizar ranking online"
+              className="px-2.5 py-1 rounded bg-black/60 border border-[var(--crt-dim,#1f6b30)] hover:border-[var(--crt-primary,#55ff77)] text-zinc-300 flex items-center gap-1.5 text-xs transition-all"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-yellow-400' : ''}`} />
+              <span className="hidden sm:inline font-bold">ACTUALIZAR</span>
+            </button>
+          </div>
         </div>
 
         {/* Tabla / Lista de Posiciones */}
-        <div className="max-h-[380px] overflow-y-auto space-y-2 pr-1">
-          {displayRankings.length === 0 ? (
+        <div className="max-h-[400px] overflow-y-auto space-y-2 pr-1">
+          {loading ? (
+            <div className="text-center py-12 text-zinc-400 text-xs italic flex flex-col items-center gap-2">
+              <RefreshCw className="w-5 h-5 animate-spin text-emerald-400" />
+              <span>Sincronizando el Top 1.000 con el servidor central...</span>
+            </div>
+          ) : rankings.length === 0 ? (
             <div className="text-center py-10 text-zinc-500 text-xs italic">
-              No hay partidas registradas aún. ¡Completá tu primera campaña!
+              No hay partidas registradas aún. ¡Sé el primero en jurar la bandera!
             </div>
           ) : (
-            displayRankings.map((entry: RankingEntry, idx: number) => {
+            rankings.map((entry: RankingEntry, idx: number) => {
               const isTop3 = idx < 3;
               let rankBadge = `${idx + 1}°`;
               if (idx === 0) rankBadge = '🥇 #1';
@@ -143,7 +126,7 @@ export const RankingScreen: React.FC = () => {
 
               return (
                 <div 
-                  key={entry.id}
+                  key={entry.id || idx}
                   className={`p-3 rounded border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 transition-all ${
                     isTop3 
                       ? 'bg-black/80 border-amber-500/60 shadow-[0_0_10px_rgba(255,200,0,0.15)]' 
