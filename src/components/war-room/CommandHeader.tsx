@@ -25,7 +25,7 @@ export const CommandHeader: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-sm md:text-base font-bold tracking-wider uppercase font-chakra text-[var(--crt-primary,#55ff77)] glow-text">
-              OPERACIÓN ATLÁNTICO 1982
+              HÉROES DEL ATLÁNTICO 1982
             </h1>
             <span className="hidden sm:inline-block px-1.5 py-0.2 text-[10px] font-bold uppercase rounded bg-red-950/80 border border-red-500 text-red-400 animate-pulse">
               CONVERTITE EN LEYENDA

@@ -1,32 +1,53 @@
-# React + TypeScript + Vite
+# Héroes del Atlántico 1982
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Simulador de carrera militar, supervivencia y toma de decisiones tácticas ambientado en la **Guerra de Malvinas (1982)**, inspirado en la dinámica de juego viral de ***Copero: Convertite en Leyenda*** y ***El Ídolo***.
 
-Currently, two official plugins are available:
+Desarrollado como una **PWA (Progressive Web App)** 100% offline-first con estética diegética de consola militar de los años 80, pantallas de fósforo CRT y audio procedural sintetizado en tiempo real.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🎖️ Características Principales
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Creación de tu Combatiente**: Elegí tu nombre, apodo, provincia de origen y tu Fuerza Armada.
+* **Las Tres Fuerzas Armadas (Tierra, Aire, Mar)**:
+  * 🪖 **TIERRA (Ejército)**: Infantería en los pozos de zorro de Monte Longdon, hambre, frío polar y combates nocturnos a bayoneta calada.
+  * ✈️ **AIRE (Fuerza Aérea)**: Cazas A-4 Skyhawk a 15 metros del agua, reabastecimiento en vuelo con Hércules KC-130 y ataques rasantes en San Carlos.
+  * ⚓ **MAR (Armada)**: Cazas Super Étendard con los misiles AM-39 Exocet, cacería de portaaviones y despliegue de la Flota de Mar.
+* **Escalafón Militar Completo (De Conscripto a General / Almirante)**:
+  * Podés empezar en primera línea y ganar ascensos en el campo de batalla por actos de valor heroico.
+  * O arrancar directamente en el Alto Mando (General de Brigada, Brigadier General o Almirante) para dirigir la alta estrategia bélica.
+* **Mortalidad Real y Peligro Constante**:
+  * Salud balanceada a 50%: una mala decisión, la hipotermia o el fuego enemigo pueden provocarte la muerte en cualquier momento.
+* **Siete Finales Posibles**:
+  1. 🏆 **¡Victoria Total en la Guerra!** (Hazaña histórica épica al retirar la flota británica).
+  2. ⚖️ **Armisticio con Honor (Tablas en la ONU)**.
+  3. 🌧️ **La Caída de Puerto Argentino (Derrota Histórica - 14 de Junio)**.
+  4. ⚰️ **Caído en Combate** (Epitafio militar con honores póstumos).
+  5. 🏥 **Evacuado por Heridas de Guerra**.
+  6. ⛓️ **Prisionero de Guerra (POW)**.
+  7. ⚖️ **Destitución por Corte Marcial**.
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 🚀 Tecnologías
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+* **Vite + React 19 + TypeScript**
+* **Tailwind CSS v4** + Shaders y scanlines CRT
+* **Web Audio API** (Sonidos procedurales: teletipo mecánico, estática VHF, alarmas y clics de conmutadores)
+* **PWA (Vite Plugin PWA + Workbox)**: Instalable en móvil y escritorio, 100% jugable offline.
+
+---
+
+## 📦 Ejecución Local
+
+```bash
+# Instalar dependencias
+npm install
+
+# Servidor de desarrollo
+npm run dev
+
+# Compilar para producción y PWA
+npm run build
+npm run preview
 ```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.

@@ -43,7 +43,7 @@ export const CharacterCreator: React.FC = () => {
             SIMULADOR DE CARRERA MILITAR Y DECISIONES 1982
           </div>
           <h1 className="text-lg sm:text-2xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
-            FORJÁ TU PROPIA LEYENDA EN MALVINAS
+            HÉROES DEL ATLÁNTICO 1982
           </h1>
           <p className="text-xs text-[var(--crt-dim,#1f6b30)]">
             CREÁ A TU COMBATIENTE, ELEGÍ TU FUERZA Y DEFINÍ EL DESTINO DE LA GUERRA

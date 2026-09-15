@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/*.png'],
       manifest: {
-        name: 'Operación Atlántico 1982 - Consola de Mando',
-        short_name: 'Atlántico 1982',
-        description: 'Simulador táctico retro y ficción interactiva de la Guerra de Malvinas (1982)',
+        name: 'Héroes del Atlántico 1982 - Convertite en Leyenda',
+        short_name: 'Héroes 1982',
+        description: 'Héroes del Atlántico 1982 - Simulador de carrera militar, decisiones tácticas y supervivencia en Malvinas',
         theme_color: '#0a1a0f',
         background_color: '#040805',
         display: 'standalone',
