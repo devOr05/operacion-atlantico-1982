@@ -7,14 +7,21 @@ import { soundFx } from '../audio/soundEffects';
 
 export interface PlayerStats {
   coraje: number;        // 0-100: Temple bajo fuego
-  salud: number;         // 0-100: Resistencia física y frío
+  salud: number;         // 0-100: Resistencia física y frío (letal si llega a 0)
   pericia: number;       // 0-100: Puntería, destreza de vuelo o técnica
   liderazgo: number;     // 0-100: Respeto y moral de compañeros/tropa
   impactoGuerra: number; // 0-100: Impacto estratégico en el conflicto
 }
 
 export type GameStage = 'creation' | 'playing' | 'summary';
-export type WarOutcome = 'victoria_total' | 'armisticio_honroso' | 'derrota_historica' | 'caido_en_combate';
+export type WarOutcome = 
+  | 'victoria_total' 
+  | 'armisticio_honroso' 
+  | 'derrota_historica' 
+  | 'caido_en_combate' 
+  | 'evacuado_herido' 
+  | 'prisionero_guerra' 
+  | 'corte_marcial';
 
 export interface DecisionLog {
   title: string;
@@ -43,6 +50,7 @@ export interface CoperoGameState {
   lastReaction: string | null;
   lastStatChanges: Record<string, number> | null;
   warOutcome: WarOutcome | null;
+  casualtyReason: string | null;
   crtMode: 'green' | 'amber' | 'cyan';
   scanlinesEnabled: boolean;
   isMuted: boolean;
@@ -57,11 +65,11 @@ const DEFAULT_PLAYER: PlayerProfile = {
   startLevel: 'primera_linea',
   currentRankIndex: 0,
   stats: {
-    coraje: 65,
-    salud: 75,
-    pericia: 60,
-    liderazgo: 55,
-    impactoGuerra: 20
+    coraje: 55,
+    salud: 50,
+    pericia: 50,
+    liderazgo: 45,
+    impactoGuerra: 5
   },
   medals: [],
   history: []
@@ -74,6 +82,7 @@ const INITIAL_STATE: CoperoGameState = {
   lastReaction: null,
   lastStatChanges: null,
   warOutcome: null,
+  casualtyReason: null,
   crtMode: 'green',
   scanlinesEnabled: true,
   isMuted: false,
@@ -111,8 +120,8 @@ export const gameStore = {
     
     // Si elige Alto Mando, arranca como General de Brigada / Brigadier / Contraalmirante (index 9)
     const initialRankIndex = startLevel === 'alto_mando' ? 9 : 0;
-    const initialImpact = startLevel === 'alto_mando' ? 45 : 20;
-    const initialLeadership = startLevel === 'alto_mando' ? 85 : 55;
+    const initialImpact = startLevel === 'alto_mando' ? 25 : 5;
+    const initialLeadership = startLevel === 'alto_mando' ? 75 : 45;
 
     state = {
       ...state,
@@ -121,6 +130,7 @@ export const gameStore = {
       lastReaction: null,
       lastStatChanges: null,
       warOutcome: null,
+      casualtyReason: null,
       player: {
         name: name.trim() || 'Esteban Gómez',
         nickname: nickname.trim() || 'El Furia',
@@ -129,9 +139,9 @@ export const gameStore = {
         startLevel,
         currentRankIndex: initialRankIndex,
         stats: {
-          coraje: 70,
-          salud: 80,
-          pericia: 65,
+          coraje: 55,
+          salud: 50, // Salud balanceada, no inflada
+          pericia: 50,
           liderazgo: initialLeadership,
           impactoGuerra: initialImpact
         },
@@ -150,7 +160,7 @@ export const gameStore = {
     const choice = step.choices[choiceIndex];
     if (!choice) return;
 
-    // Reproducir sonido
+    // Sonido según el peligro del evento
     if (choice.soundEffect === 'alert') {
       soundFx.playRedAlert();
     } else if (choice.soundEffect === 'radio') {
@@ -172,7 +182,7 @@ export const gameStore = {
     let newRankIndex = state.player.currentRankIndex;
     if (choice.promotedToRankIndex !== undefined && choice.promotedToRankIndex > newRankIndex) {
       newRankIndex = choice.promotedToRankIndex;
-    } else if (newStats.coraje >= 85 && newStats.pericia >= 80 && newRankIndex < 10 && Math.random() > 0.4) {
+    } else if (newStats.coraje >= 80 && newStats.pericia >= 75 && newRankIndex < 10 && Math.random() > 0.5) {
       newRankIndex = Math.min(10, newRankIndex + 1);
     }
 
@@ -193,18 +203,37 @@ export const gameStore = {
     };
 
     const nextStepIndex = state.currentStepIndex + 1;
-    const isGameOver = nextStepIndex >= campaign.length || newStats.salud <= 0;
 
+    // EVALUACIÓN DE CONDICIONES DE FIN DE PARTIDA Y MUERTE INMEDIATA:
+    let isGameOver = false;
     let outcome: WarOutcome | null = null;
-    if (isGameOver) {
-      if (newStats.salud <= 0) {
-        outcome = 'caido_en_combate';
-      } else if (newStats.impactoGuerra >= 65) {
-        outcome = 'victoria_total';
-      } else if (newStats.impactoGuerra >= 40 || newStats.coraje >= 75) {
+    let casualtyMsg: string | null = null;
+
+    // 1. Muerte Inmediata por Agotamiento de Salud (en cualquier momento)
+    if (newStats.salud <= 0) {
+      isGameOver = true;
+      outcome = 'caido_en_combate';
+      casualtyMsg = (choice as any).fatalText || `Caíste en combate el ${step.date} en ${step.location} como consecuencia directa de las heridas recibidas en la acción.`;
+    } 
+    // 2. Destitución por Cobardía Extrema
+    else if (newStats.coraje <= 10) {
+      isGameOver = true;
+      outcome = 'corte_marcial';
+      casualtyMsg = 'Relevado de tus funciones en el frente por quiebre de disciplina y deserción ante el fuego enemigo.';
+    }
+    // 3. Fin Natural de la Campaña
+    else if (nextStepIndex >= campaign.length) {
+      isGameOver = true;
+      if (newStats.salud <= 20) {
+        outcome = 'evacuado_herido';
+      } else if (newStats.impactoGuerra >= 70 && newStats.pericia >= 70) {
+        outcome = 'victoria_total'; // Exclusivo y difícil
+      } else if (newStats.impactoGuerra >= 45) {
         outcome = 'armisticio_honroso';
+      } else if (newStats.liderazgo <= 20) {
+        outcome = 'prisionero_guerra';
       } else {
-        outcome = 'derrota_historica';
+        outcome = 'derrota_historica'; // El final real del 14 de junio si se juega de forma común
       }
     }
 
@@ -215,6 +244,7 @@ export const gameStore = {
       lastStatChanges: choice.changes,
       stage: isGameOver ? 'summary' : 'playing',
       warOutcome: outcome,
+      casualtyReason: casualtyMsg,
       player: {
         ...state.player,
         currentRankIndex: newRankIndex,

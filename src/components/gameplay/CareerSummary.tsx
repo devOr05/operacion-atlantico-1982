@@ -9,31 +9,61 @@ import { useGameStore, gameStore } from '../../core/state/gameStore';
 import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
 
 export const CareerSummary: React.FC = () => {
-  const { player, warOutcome } = useGameStore();
+  const { player, warOutcome, casualtyReason } = useGameStore();
   const currentRank = RANKS_BY_BRANCH[player.branch][player.currentRankIndex];
 
-  let title = 'DEFENSA CON HONOR';
-  let description = 'Luchaste con honor y temple hasta agotar los últimos recursos en las islas.';
+  let title = 'LA CAÍDA DE PUERTO ARGENTINO (14 DE JUNIO)';
+  let subtitle = 'DERROTA HISTÓRICA CON HONOR MILITAR';
+  let description = 'Tras 74 días de encarnizada resistencia en condiciones infrahumanas, con el combustible y la munición agotados, cesaron los fuegos en las islas. Regresas al continente con la frente en alto y el respeto de la patria.';
+  let cardBorder = 'border-[var(--crt-dim,#1f6b30)]';
+  let badgeColor = 'bg-zinc-900 text-zinc-300 border-zinc-700';
 
   if (warOutcome === 'victoria_total') {
     title = '🏆 ¡VICTORIA TOTAL EN LA GUERRA! 🏆';
-    description = 'Tus decisiones estratégicas y tu coraje en combate infligieron daños críticos a la Fuerza de Tareas británica. Gran Bretaña se vio obligada a retirar la flota y aceptar una resolución vinculante en la ONU con reconocimiento de la soberanía argentina.';
+    subtitle = 'HAZAÑA ÉPICA: RETIRO DE LA ROYAL NAVY';
+    description = 'Tus decisiones estratégicas y tu coraje en combate infligieron daños críticos irreparables a la Fuerza de Tareas británica. Gran Bretaña se vio forzada a retirar su flota y firmar un armisticio vinculante en la ONU con reconocimiento de la soberanía argentina.';
+    cardBorder = 'border-yellow-500 shadow-[0_0_25px_rgba(255,200,0,0.3)]';
+    badgeColor = 'bg-yellow-950 text-yellow-300 border-yellow-500 animate-pulse';
   } else if (warOutcome === 'armisticio_honroso') {
-    title = '🎖️ ARMISTICIO CON HONOR Y HEROÍSMO 🎖️';
-    description = 'La tenacidad de tus operaciones quebró la voluntad ofensiva enemiga y forzó un cese del fuego negociado ante el Consejo de Seguridad, salvaguardando la vida de los combatientes y sentando un precedente imborrable.';
+    title = '⚖️ ARMISTICIO CON HONOR (TABLAS EN LA ONU)';
+    subtitle = 'EMPATE BÉLICO Y RETIRO ESCALONADO';
+    description = 'La tenacidad de tus operaciones quebró la voluntad ofensiva enemiga y forzó un cese del fuego negociado ante el Consejo de Seguridad de la ONU, salvaguardando la vida de los combatientes y sentando un precedente imborrable.';
+    cardBorder = 'border-emerald-500';
+    badgeColor = 'bg-emerald-950 text-emerald-300 border-emerald-500';
   } else if (warOutcome === 'caido_en_combate') {
     title = '⚰️ GLORIA ETERNA: CAÍDO EN COMBATE';
-    description = 'Entregaste tu vida por la patria y por tus camaradas en el cumplimiento del deber. Tu nombre ha quedado grabado en letras de bronce en el Cenotafio de Malvinas y en la memoria del pueblo argentino.';
+    subtitle = 'HEROÍSMO SUPREMO EN MALVINAS';
+    description = casualtyReason || 'Entregaste tu vida por la patria y por tus camaradas en el cumplimiento del deber. Tu nombre ha quedado grabado en letras de bronce en el Cenotafio de Malvinas y en la memoria eterna del pueblo argentino.';
+    cardBorder = 'border-red-600 shadow-[0_0_20px_rgba(255,0,0,0.3)]';
+    badgeColor = 'bg-red-950 text-red-300 border-red-500';
+  } else if (warOutcome === 'evacuado_herido') {
+    title = '🏥 EVACUADO POR HERIDAS DE COMBATE';
+    subtitle = 'SOBREVIVIENTE DE LA GUERRA';
+    description = 'Sufriste heridas graves por esquirlas o congelamiento extremo que obligaron a tu evacuación médica de urgencia en el buque hospital. Regresas como veterano condecorado con secuelas físicas del frente.';
+    cardBorder = 'border-amber-600';
+    badgeColor = 'bg-amber-950 text-amber-300 border-amber-500';
+  } else if (warOutcome === 'prisionero_guerra') {
+    title = '⛓️ PRISIONERO DE GUERRA EN LAS ISLAS';
+    subtitle = 'RENDICIÓN TRAS AGOTAR MUNICIÓN';
+    description = 'Tu posición fue rebasada y copada por paracaidistas británicos tras quedar sin proyectiles ni apoyo. Fuiste desarmado con respeto militar y embarcado en el buque inglés Norland hacia el continente.';
+    cardBorder = 'border-zinc-600';
+    badgeColor = 'bg-zinc-950 text-zinc-400 border-zinc-600';
+  } else if (warOutcome === 'corte_marcial') {
+    title = '⚖️ DESTITUCIÓN POR CORTE MARCIAL';
+    subtitle = 'QUIEBRE DE DISCIPLINA EN EL FRENTE';
+    description = casualtyReason || 'El Tribunal Militar te destituyó y degradó por abandono de tu puesto de combate o negativa a cumplir las órdenes en momentos críticos para tu unidad.';
+    cardBorder = 'border-red-900';
+    badgeColor = 'bg-red-950 text-red-400 border-red-700';
   }
 
   return (
     <div className="flex-1 flex items-center justify-center p-3 sm:p-6 overflow-y-auto font-mono-military select-none">
-      <div className="w-full max-w-2xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-5 border-2 border-[var(--crt-dim,#1f6b30)]">
+      <div className={`w-full max-w-2xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 ${cardBorder}`}>
         
         {/* Cabecera de la Credencial */}
         <div className="text-center border-b border-[var(--crt-dim,#1f6b30)] pb-3 space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded bg-black border border-[var(--crt-dim,#1f6b30)] text-[11px] text-[var(--crt-accent,#aaffbb)] uppercase tracking-wider">
-            ESTADO MAYOR CONJUNTO • HOJA DE SERVICIOS 1982
+          <div className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider border ${badgeColor}`}>
+            {subtitle}
           </div>
           <h1 className="text-lg sm:text-2xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
             {title}
@@ -78,7 +108,9 @@ export const CareerSummary: React.FC = () => {
             </div>
             <div className="bg-zinc-950 p-2 rounded border border-zinc-800">
               <span className="text-zinc-500 block text-[10px]">SALUD / FÍSICO:</span>
-              <span className="text-base font-bold text-emerald-400">{player.stats.salud}%</span>
+              <span className={`text-base font-bold ${player.stats.salud <= 0 ? 'text-red-500' : 'text-emerald-400'}`}>
+                {player.stats.salud}%
+              </span>
             </div>
             <div className="bg-zinc-950 p-2 rounded border border-zinc-800">
               <span className="text-zinc-500 block text-[10px]">PERICIA:</span>
@@ -111,9 +143,9 @@ export const CareerSummary: React.FC = () => {
           )}
 
           {/* Historial de Hazañas en la Campaña */}
-          <div className="pt-2 border-t border-[var(--crt-dim,#1f6b30)]/40 max-h-48 overflow-y-auto space-y-1.5 pr-1">
+          <div className="pt-2 border-t border-[var(--crt-dim,#1f6b30)]/40 max-h-40 overflow-y-auto space-y-1.5 pr-1">
             <div className="text-[11px] font-bold text-zinc-500 uppercase mb-1">
-              REGISTRO DE DECISIONES EN LAS ISLAS ({player.history.length}):
+              REGISTRO DE OPERACIONES ({player.history.length}):
             </div>
             {player.history.map((h, i) => (
               <div key={i} className="text-[11px] bg-black/40 p-1.5 rounded border border-zinc-800 text-zinc-300">
@@ -129,7 +161,7 @@ export const CareerSummary: React.FC = () => {
         </div>
 
         {/* Botón para Reiniciar y Jugar con otra Fuerza / Rango */}
-        <div className="pt-2">
+        <div className="pt-1">
           <button
             onClick={() => gameStore.restartGame()}
             className="w-full py-3 px-4 rounded font-chakra font-bold text-sm sm:text-base uppercase tracking-wider tactical-btn flex items-center justify-center gap-2 border-2 border-[var(--crt-primary,#55ff77)] shadow-[0_0_15px_var(--crt-glow)]"
