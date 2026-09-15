@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="radarBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0e2a14" />
+      <stop offset="85%" stop-color="#061309" />
+      <stop offset="100%" stop-color="#020703" />
+    </radialGradient>
+    <radialGradient id="sweepGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(85, 255, 119, 0.4)" />
+      <stop offset="100%" stop-color="rgba(85, 255, 119, 0)" />
+    </radialGradient>
+  </defs>
+  <!-- Background Circle -->
+  <rect width="512" height="512" rx="64" fill="#040805" />
+  <circle cx="256" cy="256" r="236" fill="url(#radarBg)" stroke="#39b54a" stroke-width="6" />
+  
+  <!-- Concentric Rings -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#237a32" stroke-width="2" stroke-dasharray="8 6" />
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#237a32" stroke-width="2" />
+  <circle cx="256" cy="256" r="60" fill="none" stroke="#237a32" stroke-width="2" stroke-dasharray="4 4" />
+  
+  <!-- Crosshairs -->
+  <line x1="20" y1="256" x2="492" y2="256" stroke="#237a32" stroke-width="2" />
+  <line x1="256" y1="20" x2="256" y2="492" stroke="#237a32" stroke-width="2" />
+  
+  <!-- 45 Degree Diagonal Lines -->
+  <line x1="89" y1="89" x2="423" y2="423" stroke="#1b5a26" stroke-width="1.5" stroke-dasharray="4 4" />
+  <line x1="89" y1="423" x2="423" y2="89" stroke="#1b5a26" stroke-width="1.5" stroke-dasharray="4 4" />
+  
+  <!-- Degree Ticks -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="#55ff77" stroke-width="1.5" stroke-dasharray="2 12" />
+
+  <!-- Vector Silhouette of Malvinas (Stylized) -->
+  <!-- Gran Malvina -->
+  <path d="M 170 200 Q 185 180 205 190 T 215 230 T 195 280 T 160 270 T 150 230 Z" fill="none" stroke="#55ff77" stroke-width="3" opacity="0.85" />
+  <!-- Isla Soledad -->
+  <path d="M 270 195 Q 310 185 330 210 T 320 250 T 300 290 T 260 270 T 255 230 Z" fill="none" stroke="#55ff77" stroke-width="3" opacity="0.85" />
+  <!-- Sound/Estrecho -->
+  <line x1="225" y1="180" x2="245" y2="280" stroke="#39b54a" stroke-width="1" stroke-dasharray="2 4" />
+
+  <!-- Radar Blips -->
+  <circle cx="340" cy="180" r="6" fill="#ff4444" />
+  <circle cx="340" cy="180" r="12" fill="none" stroke="#ff4444" stroke-width="1.5" opacity="0.6" />
+  <circle cx="180" cy="240" r="5" fill="#55ff77" />
+  <circle cx="290" cy="230" r="5" fill="#55ff77" />
+
+  <!-- Sweep Sector -->
+  <path d="M 256 256 L 420 130 A 236 236 0 0 0 256 20 Z" fill="url(#sweepGrad)" opacity="0.75" />
+  <line x1="256" y1="256" x2="420" y2="130" stroke="#aaffbb" stroke-width="3" />
+
+  <!-- Center Pin -->
+  <circle cx="256" cy="256" r="6" fill="#55ff77" />
+</svg>

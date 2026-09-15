@@ -1,0 +1,155 @@
+/* Efectos diegéticos de pantalla CRT de los años 80 */
+
+@layer utilities {
+  /* Fósforo Verde P1 (Predeterminado) */
+  .crt-green {
+    --crt-primary: #55ff77;
+    --crt-dim: #1f6b30;
+    --crt-bg: #050e07;
+    --crt-glow: rgba(85, 255, 119, 0.45);
+    --crt-accent: #aaffbb;
+    --crt-alert: #ff4747;
+    --crt-warning: #ffcc00;
+  }
+
+  /* Fósforo Ámbar P3 */
+  .crt-amber {
+    --crt-primary: #ffb833;
+    --crt-dim: #7a5010;
+    --crt-bg: #120b02;
+    --crt-glow: rgba(255, 184, 51, 0.45);
+    --crt-accent: #ffdf99;
+    --crt-alert: #ff3b30;
+    --crt-warning: #ffd60a;
+  }
+
+  /* Fósforo Azul Táctico / Cobalto */
+  .crt-cyan {
+    --crt-primary: #4deeea;
+    --crt-dim: #125553;
+    --crt-bg: #030d12;
+    --crt-glow: rgba(77, 238, 234, 0.45);
+    --crt-accent: #affaf7;
+    --crt-alert: #ff4777;
+    --crt-warning: #ffe066;
+  }
+}
+
+/* Tipografías tácticas */
+.font-mono-military {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.font-vt323 {
+  font-family: 'VT323', monospace;
+}
+
+.font-chakra {
+  font-family: 'Chakra Petch', sans-serif;
+}
+
+/* Text glow para terminales */
+.glow-text {
+  text-shadow: 0 0 5px var(--crt-glow), 0 0 12px var(--crt-glow);
+}
+
+.glow-border {
+  box-shadow: 0 0 10px var(--crt-glow), inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Efecto Scanlines de monitor analógico */
+.scanlines {
+  position: relative;
+}
+
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.45) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* Viñeteado y curvatura del tubo catódico */
+.crt-bezel {
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9),
+              inset 0 0 15px rgba(0, 0, 0, 0.95),
+              0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+/* Parpadeo sutil del fósforo */
+@keyframes phosphorFlicker {
+  0% { opacity: 0.985; }
+  50% { opacity: 1; }
+  52% { opacity: 0.96; }
+  54% { opacity: 1; }
+  80% { opacity: 0.99; }
+  100% { opacity: 0.985; }
+}
+
+.crt-flicker {
+  animation: phosphorFlicker 0.18s infinite;
+}
+
+/* Radar Sweep Keyframe */
+@keyframes sweepRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.radar-sweep-anim {
+  transform-origin: center center;
+  animation: sweepRotate 4s linear infinite;
+}
+
+/* Radar Blip Pulse */
+@keyframes blipPulse {
+  0% { transform: scale(0.85); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.3; }
+  100% { transform: scale(0.85); opacity: 1; }
+}
+
+.blip-pulse {
+  animation: blipPulse 1.6s ease-in-out infinite;
+}
+
+/* Cursor de teletipo titilante */
+@keyframes cursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.teletype-cursor {
+  animation: cursorBlink 0.8s infinite;
+}
+
+/* Barra de desplazamiento militar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 20, 10, 0.6);
+  border: 1px solid rgba(85, 255, 119, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--crt-dim, #1f6b30);
+  border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--crt-primary, #55ff77);
+}

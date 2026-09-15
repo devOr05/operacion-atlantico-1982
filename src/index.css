@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "./styles/crt.css";
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #040805;
+  color: #55ff77;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* Clases base para componentes tácticos */
+.tactical-border {
+  border: 1px solid var(--crt-dim, #1f6b30);
+  background: rgba(5, 14, 7, 0.85);
+  backdrop-filter: blur(2px);
+}
+
+.tactical-btn {
+  background: rgba(10, 26, 15, 0.9);
+  border: 1px solid var(--crt-dim, #1f6b30);
+  color: var(--crt-primary, #55ff77);
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.tactical-btn:hover {
+  background: rgba(31, 107, 48, 0.4);
+  border-color: var(--crt-primary, #55ff77);
+  box-shadow: 0 0 10px var(--crt-glow, rgba(85, 255, 119, 0.4));
+  color: var(--crt-accent, #aaffbb);
+}
+
+.tactical-btn:active {
+  transform: translateY(1px);
+  background: rgba(85, 255, 119, 0.25);
+}
