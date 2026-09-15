@@ -10,6 +10,7 @@ import {
   MapPin, 
   Sparkles 
 } from 'lucide-react';
+import { TacticalMap } from '../map/TacticalMap';
 import { useGameStore, gameStore, getCurrentCampaign } from '../../core/state/gameStore';
 import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
 
@@ -25,8 +26,19 @@ export const CoperoCard: React.FC = () => {
   const progressPercent = Math.round(((currentStepIndex + 1) / campaign.length) * 100);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 overflow-y-auto font-mono-military select-none">
-      <div className="w-full max-w-2xl bg-[#030a05] tactical-border rounded-lg shadow-2xl p-3 sm:p-5 flex flex-col gap-3 border border-[var(--crt-dim,#1f6b30)]">
+    <div className="flex-1 w-full max-w-7xl mx-auto p-2 sm:p-4 overflow-y-auto font-mono-military select-none flex flex-col lg:flex-row items-start justify-center gap-3 sm:gap-4">
+      
+      {/* Panel Izquierdo: Mapa Táctico de Malvinas de la 1ra versión con Radar TPS-43 */}
+      <div className="w-full lg:w-[48%] flex flex-col h-[320px] sm:h-[380px] lg:h-[calc(100vh-120px)] lg:sticky lg:top-0">
+        <TacticalMap 
+          currentLocationName={currentStep.location} 
+          stepNumber={currentStep.stepNumber} 
+          branch={player.branch} 
+        />
+      </div>
+
+      {/* Panel Derecho: Ficha del Combatiente y Decisiones de Guerra */}
+      <div className="w-full lg:w-[52%] bg-[#030a05] tactical-border rounded-lg shadow-2xl p-3 sm:p-5 flex flex-col gap-3 border border-[var(--crt-dim,#1f6b30)]">
         
         {/* Ficha del Combatiente al estilo Copero / El Ídolo */}
         <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded bg-black/70 border border-[var(--crt-dim,#1f6b30)] text-xs">
