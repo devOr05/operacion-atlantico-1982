@@ -17,6 +17,7 @@ import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
 export const CoperoCard: React.FC = () => {
   const state = useGameStore();
   const { player, currentStepIndex, lastReaction, lastStatChanges } = state;
+  const [showMobileMap, setShowMobileMap] = React.useState<boolean>(false);
   const campaign = getCurrentCampaign(player.branch, player.initialRankIndex);
   const currentStep = campaign[currentStepIndex];
 
@@ -26,10 +27,28 @@ export const CoperoCard: React.FC = () => {
   const progressPercent = Math.round(((currentStepIndex + 1) / campaign.length) * 100);
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto p-2 sm:p-4 overflow-y-auto font-mono-military select-none flex flex-col lg:flex-row items-start justify-center gap-3 sm:gap-4">
+    <div className="flex-1 w-full max-w-7xl mx-auto p-2 sm:p-4 overflow-y-auto font-mono-military select-none flex flex-col lg:flex-row items-start justify-center gap-3 sm:gap-4 pb-8">
       
-      {/* Panel Izquierdo: Mapa Táctico de Malvinas de la 1ra versión con Radar TPS-43 */}
-      <div className="w-full lg:w-[48%] flex flex-col h-[320px] sm:h-[380px] lg:h-[calc(100vh-120px)] lg:sticky lg:top-0">
+      {/* Botón selector de mapa para celular */}
+      <div className="w-full lg:hidden flex items-center justify-between p-2 bg-black/80 rounded border border-[var(--crt-dim,#1f6b30)] text-xs">
+        <div className="flex items-center gap-2">
+          <MapPin className="w-3.5 h-3.5 text-[var(--crt-primary,#55ff77)]" />
+          <span className="text-[11px] text-zinc-300">UBICACIÓN: <b className="text-[var(--crt-primary,#55ff77)]">{currentStep.location}</b></span>
+        </div>
+        <button
+          onClick={() => setShowMobileMap(!showMobileMap)}
+          className="px-2.5 py-1 text-[11px] rounded bg-[var(--crt-dim,#1f6b30)]/40 border border-[var(--crt-primary,#55ff77)] text-[var(--crt-primary,#55ff77)] font-bold hover:bg-[var(--crt-primary,#55ff77)] hover:text-black transition-all"
+        >
+          {showMobileMap ? '▲ OCULTAR MAPA' : '▼ VER MAPA RADAR'}
+        </button>
+      </div>
+
+      {/* Panel Izquierdo: Mapa Táctico de Malvinas (visible siempre en desktop, colapsable en móvil) */}
+      <div className={`w-full lg:w-[48%] flex flex-col transition-all duration-300 ${
+        showMobileMap 
+          ? 'h-[340px] block' 
+          : 'hidden lg:flex lg:h-[calc(100vh-140px)] lg:sticky lg:top-0'
+      }`}>
         <TacticalMap 
           currentLocationName={currentStep.location} 
           stepNumber={currentStep.stepNumber} 

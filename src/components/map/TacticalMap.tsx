@@ -289,34 +289,34 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
             );
           })}
         </svg>
-
-        {/* Panel flotante de información del nodo seleccionado */}
-        {selectedNode && (
-          <div className="absolute bottom-2 left-2 right-2 sm:right-auto sm:max-w-xs md:max-w-sm p-2 sm:p-2.5 rounded bg-black/90 border border-[var(--crt-dim,#1f6b30)] backdrop-blur-md text-[11px] font-mono-military z-30 shadow-2xl">
-            <div className="flex items-center justify-between gap-1 border-b border-[var(--crt-dim,#1f6b30)] pb-1 mb-1">
-              <div className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[var(--crt-primary,#55ff77)]" />
-                <span className="font-bold text-[var(--crt-primary,#55ff77)] uppercase truncate">
-                  {selectedNode.name}
-                </span>
-              </div>
-              <span className={`px-1.5 py-0.2 text-[9px] rounded font-bold uppercase ${
-                selectedNode.status === 'critical' ? 'bg-red-950 text-red-400 border border-red-600' :
-                selectedNode.status === 'contested' ? 'bg-yellow-950 text-yellow-400 border border-yellow-600' :
-                'bg-green-950 text-green-400 border border-green-600'
-              }`}>
-                {selectedNode.status}
-              </span>
-            </div>
-            <p className="text-[10px] text-zinc-300 leading-snug line-clamp-2">
-              {selectedNode.description}
-            </p>
-          </div>
-        )}
       </div>
 
+      {/* Panel de información del nodo seleccionado: UBICADO ABAJO DEL MAPA, NO ENCIMA */}
+      {selectedNode && (
+        <div className="p-2 sm:p-2.5 bg-black/95 border-t border-[var(--crt-dim,#1f6b30)] text-[11px] font-mono-military shrink-0">
+          <div className="flex items-center justify-between gap-1 border-b border-[var(--crt-dim,#1f6b30)]/60 pb-1 mb-1">
+            <div className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[var(--crt-primary,#55ff77)]" />
+              <span className="font-bold text-[var(--crt-primary,#55ff77)] uppercase truncate">
+                {selectedNode.name}
+              </span>
+            </div>
+            <span className={`px-1.5 py-0.5 text-[9px] rounded font-bold uppercase ${
+              selectedNode.status === 'critical' ? 'bg-red-950 text-red-400 border border-red-600' :
+              selectedNode.status === 'contested' ? 'bg-yellow-950 text-yellow-400 border border-yellow-600' :
+              'bg-green-950 text-green-400 border border-green-600'
+            }`}>
+              {selectedNode.status}
+            </span>
+          </div>
+          <p className="text-[10px] sm:text-xs text-zinc-300 leading-snug line-clamp-2">
+            {selectedNode.description}
+          </p>
+        </div>
+      )}
+
       {/* Pie del radar */}
-      <div className="flex items-center justify-between px-2.5 py-1 bg-black/90 border-t border-[var(--crt-dim,#1f6b30)] text-[10px] text-zinc-400">
+      <div className="flex items-center justify-between px-2.5 py-1 bg-black/90 border-t border-[var(--crt-dim,#1f6b30)] text-[10px] text-zinc-400 shrink-0">
         <span className="flex items-center gap-1.5 text-[var(--crt-accent,#aaffbb)]">
           <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
           ECOS TÁCTICOS ACTIVOS

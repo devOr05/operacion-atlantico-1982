@@ -14,12 +14,12 @@ export const App: React.FC = () => {
 
   return (
     <CrtScreen>
-      <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full overflow-hidden">
         {/* Cabecera Superior con Reloj y Controles CRT */}
         <CommandHeader />
 
         {/* Contenedor Principal según Etapa */}
-        <main className="flex-1 flex overflow-hidden min-h-0">
+        <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden min-h-0 relative">
           {stage === 'creation' && <CharacterCreator />}
           {stage === 'playing' && <CoperoCard />}
           {stage === 'summary' && <CareerSummary />}
@@ -27,7 +27,7 @@ export const App: React.FC = () => {
         </main>
 
         {/* Pie de página */}
-        <footer className="py-1 px-3 bg-black/90 border-t border-[var(--crt-dim,#1f6b30)] flex items-center justify-between text-[11px] text-zinc-500 font-mono-military z-20 select-none">
+        <footer className="py-1 px-3 bg-black/90 border-t border-[var(--crt-dim,#1f6b30)] flex items-center justify-between text-[11px] text-zinc-500 font-mono-military z-20 select-none shrink-0">
           <span className="hidden sm:inline text-[10px] text-[var(--crt-dim,#1f6b30)]">HÉROES DEL ATLÁNTICO 1982</span>
           <span className="mx-auto sm:mx-0">
             Desarrollado por <a href="https://instagram.com/taller_it_" target="_blank" rel="noopener noreferrer" className="text-[var(--crt-primary,#55ff77)] font-bold hover:underline glow-text">@taller_it_</a>
