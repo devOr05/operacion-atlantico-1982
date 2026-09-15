@@ -1,8 +1,10 @@
 import { useSyncExternalStore } from 'react';
 import { type MilitaryBranch, RANKS_BY_BRANCH } from '../story/militaryRanks';
-import { TIERRA_CAMPAIGN } from '../story/campaigns/tierraCampaign';
-import { AIRE_CAMPAIGN } from '../story/campaigns/aireCampaign';
-import { MAR_CAMPAIGN } from '../story/campaigns/marCampaign';
+import { getTierraCampaignByTier } from '../story/campaigns/tierraCampaign';
+import { getAireCampaignByTier } from '../story/campaigns/aireCampaign';
+import { getMarCampaignByTier } from '../story/campaigns/marCampaign';
+import { getRankTierFromIndex } from '../story/campaigns/campaignTypes';
+import { submitGlobalRanking, incrementGlobalCombatientes } from '../../services/supabase';
 import { soundFx } from '../audio/soundEffects';
 
 export interface PlayerStats {
@@ -37,6 +39,7 @@ export interface PlayerProfile {
   province: string;
   branch: MilitaryBranch;
   startLevel: 'primera_linea' | 'alto_mando';
+  initialRankIndex: number;
   currentRankIndex: number;
   stats: PlayerStats;
   medals: string[];
@@ -116,6 +119,11 @@ export function saveRankingEntry(entry: RankingEntry) {
   } catch (e) {
     console.error(e);
   }
+
+  // Enviar a Supabase / backend global en segundo plano
+  submitGlobalRanking(entry).catch(err => {
+    console.warn('Sync global ranking error:', err);
+  });
 }
 
 export interface CoperoGameState {
@@ -138,6 +146,7 @@ const DEFAULT_PLAYER: PlayerProfile = {
   province: 'Chaco',
   branch: 'tierra',
   startLevel: 'primera_linea',
+  initialRankIndex: 0,
   currentRankIndex: 0,
   stats: {
     coraje: 55,
@@ -171,10 +180,11 @@ function emitChange() {
   listeners.forEach((listener) => listener());
 }
 
-export function getCurrentCampaign(branch: MilitaryBranch) {
-  if (branch === 'aire') return AIRE_CAMPAIGN;
-  if (branch === 'mar') return MAR_CAMPAIGN;
-  return TIERRA_CAMPAIGN;
+export function getCurrentCampaign(branch: MilitaryBranch, rankIndex: number = 0) {
+  const tier = getRankTierFromIndex(rankIndex);
+  if (branch === 'aire') return getAireCampaignByTier(tier);
+  if (branch === 'mar') return getMarCampaignByTier(tier);
+  return getTierraCampaignByTier(tier);
 }
 
 export const gameStore = {
@@ -189,13 +199,32 @@ export const gameStore = {
     nickname: string,
     province: string,
     branch: MilitaryBranch,
-    startLevel: 'primera_linea' | 'alto_mando'
+    chosenRankIndex: number = 0
   ) => {
     soundFx.playCommandConfirm();
+    // Incrementar en segundo plano el contador global de combatientes alistados
+    incrementGlobalCombatientes().catch(() => {});
     
-    const initialRankIndex = startLevel === 'alto_mando' ? 9 : 0;
-    const initialImpact = startLevel === 'alto_mando' ? 25 : 5;
-    const initialLeadership = startLevel === 'alto_mando' ? 75 : 45;
+    const initialRankIndex = Math.max(0, Math.min(10, chosenRankIndex));
+    const tier = getRankTierFromIndex(initialRankIndex);
+
+    let initialLeadership = 45;
+    let initialImpact = 5;
+    let initialPericia = 50;
+
+    if (tier === 'alto_mando') {
+      initialLeadership = 80;
+      initialImpact = 30;
+      initialPericia = 65;
+    } else if (tier === 'oficial') {
+      initialLeadership = 65;
+      initialImpact = 15;
+      initialPericia = 60;
+    } else if (tier === 'suboficial') {
+      initialLeadership = 55;
+      initialImpact = 10;
+      initialPericia = 55;
+    }
 
     state = {
       ...state,
@@ -210,12 +239,13 @@ export const gameStore = {
         nickname: nickname.trim() || 'El Furia',
         province: province || 'Buenos Aires',
         branch,
-        startLevel,
+        startLevel: tier === 'alto_mando' ? 'alto_mando' : 'primera_linea',
+        initialRankIndex,
         currentRankIndex: initialRankIndex,
         stats: {
           coraje: 55,
           salud: 50,
-          pericia: 50,
+          pericia: initialPericia,
           liderazgo: initialLeadership,
           impactoGuerra: initialImpact
         },
@@ -227,7 +257,7 @@ export const gameStore = {
   },
 
   makeDecision: (choiceIndex: number) => {
-    const campaign = getCurrentCampaign(state.player.branch);
+    const campaign = getCurrentCampaign(state.player.branch, state.player.initialRankIndex);
     const step = campaign[state.currentStepIndex];
     if (!step) return;
 

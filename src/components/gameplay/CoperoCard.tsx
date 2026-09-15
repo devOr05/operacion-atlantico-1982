@@ -17,7 +17,7 @@ import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
 export const CoperoCard: React.FC = () => {
   const state = useGameStore();
   const { player, currentStepIndex, lastReaction, lastStatChanges } = state;
-  const campaign = getCurrentCampaign(player.branch);
+  const campaign = getCurrentCampaign(player.branch, player.initialRankIndex);
   const currentStep = campaign[currentStepIndex];
 
   if (!currentStep) return null;
