@@ -115,7 +115,7 @@ export function saveRankingEntry(entry: RankingEntry) {
     const filtered = list.filter(r => r.id !== entry.id);
     filtered.push(entry);
     filtered.sort((a, b) => b.score - a.score);
-    localStorage.setItem(RANKING_STORAGE_KEY, JSON.stringify(filtered.slice(0, 50)));
+    localStorage.setItem(RANKING_STORAGE_KEY, JSON.stringify(filtered.slice(0, 1000)));
   } catch (e) {
     console.error(e);
   }

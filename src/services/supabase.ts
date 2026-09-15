@@ -98,7 +98,7 @@ export async function incrementGlobalCombatientes(): Promise<number> {
 }
 
 /**
- * Consulta las 50 mejores partidas globales desde Supabase
+ * Consulta las 1000 mejores partidas globales desde Supabase
  */
 export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
   if (!supabase) return null;
@@ -108,7 +108,7 @@ export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
       .from('rankings')
       .select('*')
       .order('score', { ascending: false })
-      .limit(50);
+      .limit(1000);
 
     if (error) {
       console.warn('Error leyendo rankings de Supabase:', error);

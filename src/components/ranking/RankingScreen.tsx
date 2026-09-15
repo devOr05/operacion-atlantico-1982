@@ -93,7 +93,7 @@ export const RankingScreen: React.FC = () => {
               }`}
             >
               <Globe className="w-3.5 h-3.5 text-amber-400" />
-              <span>TOP GLOBAL (EN LÍNEA)</span>
+              <span>TOP 1000 GLOBAL (EN LÍNEA)</span>
             </button>
 
             <button
