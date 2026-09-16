@@ -4,16 +4,13 @@ import {
   Volume2, 
   VolumeX, 
   BookOpen, 
-  Medal,
   Compass 
 } from 'lucide-react';
 import { useGameStore, gameStore } from '../../core/state/gameStore';
-import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
 
 export const CommandHeader: React.FC = () => {
   const state = useGameStore();
-  const { player, stage, dossierOpen } = state;
-  const currentRank = RANKS_BY_BRANCH[player.branch]?.[player.currentRankIndex];
+  const { dossierOpen } = state;
 
   return (
     <header className="h-11 sm:h-12 min-h-[44px] border-b border-[var(--crt-dim,#1f6b30)] bg-[rgba(3,10,5,0.95)] px-2 sm:px-3 flex items-center justify-between gap-1 sm:gap-2 select-none font-mono-military shrink-0 z-30">
@@ -36,15 +33,6 @@ export const CommandHeader: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Rango del combatiente en partida */}
-      {stage !== 'creation' && currentRank && (
-        <div className="hidden xl:flex items-center gap-1.5 bg-black/50 px-2 py-0.5 rounded border border-amber-500/40 text-[11px]">
-          <Medal className="w-3 h-3 text-yellow-400" />
-          <span className="text-zinc-400 uppercase">{player.name}:</span>
-          <span className="font-bold text-amber-300 uppercase">{currentRank.title}</span>
-        </div>
-      )}
 
       {/* Controles de hardware de la consola */}
       <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
