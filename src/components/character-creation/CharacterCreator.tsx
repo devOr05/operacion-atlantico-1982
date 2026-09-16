@@ -100,8 +100,8 @@ export const CharacterCreator: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 w-full flex items-start justify-center p-3 sm:p-6 overflow-y-auto font-mono-military select-none pt-2 sm:pt-4 pb-12">
-      <div className="w-full max-w-3xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 border-[var(--crt-dim,#1f6b30)] my-auto">
+    <div className="w-full flex items-start justify-center p-3 sm:p-6 overflow-y-auto font-mono-military select-none pt-4 pb-28 min-h-full">
+      <div className="w-full max-w-3xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 border-[var(--crt-dim,#1f6b30)] mb-8">
         
         {/* Cabecera estilo Libreta de Enrolamiento 1982 */}
         <div className="border-b border-[var(--crt-dim,#1f6b30)] pb-3 text-center space-y-1">

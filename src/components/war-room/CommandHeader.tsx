@@ -16,7 +16,7 @@ export const CommandHeader: React.FC = () => {
   const currentRank = RANKS_BY_BRANCH[player.branch]?.[player.currentRankIndex];
 
   return (
-    <header className="border-b border-[var(--crt-dim,#1f6b30)] bg-[rgba(3,10,5,0.95)] px-2 sm:px-3 py-1.5 sm:py-2 flex items-center justify-between gap-1.5 sm:gap-2 select-none font-mono-military shrink-0 z-30">
+    <header className="h-11 sm:h-12 min-h-[44px] border-b border-[var(--crt-dim,#1f6b30)] bg-[rgba(3,10,5,0.95)] px-2 sm:px-3 flex items-center justify-between gap-1 sm:gap-2 select-none font-mono-military shrink-0 z-30">
       {/* Título y estado de la consola */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
         <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded border border-[var(--crt-primary,#55ff77)] bg-[rgba(85,255,119,0.1)] glow-border shrink-0">
@@ -25,7 +25,8 @@ export const CommandHeader: React.FC = () => {
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <h1 className="text-xs sm:text-base font-bold tracking-wider uppercase font-chakra text-[var(--crt-primary,#55ff77)] glow-text truncate">
-              HÉROES DEL ATLÁNTICO 1982
+              <span className="hidden sm:inline">HÉROES DEL ATLÁNTICO 1982</span>
+              <span className="sm:hidden">HÉROES '82</span>
             </h1>
           </div>
           <div className="hidden sm:flex text-[10px] text-[var(--crt-dim,#1f6b30)] items-center gap-1.5">
@@ -47,8 +48,8 @@ export const CommandHeader: React.FC = () => {
 
       {/* Controles de hardware de la consola */}
       <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-        {/* Selector de fósforo CRT */}
-        <div className="flex items-center bg-black/60 p-0.5 rounded border border-[var(--crt-dim,#1f6b30)]">
+        {/* Selector de fósforo CRT (visible en sm+) */}
+        <div className="hidden sm:flex items-center bg-black/60 p-0.5 rounded border border-[var(--crt-dim,#1f6b30)]">
           <button
             onClick={() => gameStore.setCrtMode('green')}
             title="Fósforo Verde P1"
