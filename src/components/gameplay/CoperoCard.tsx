@@ -6,7 +6,6 @@ import {
   Users, 
   Flame, 
   Medal, 
-  Send, 
   MapPin, 
   Sparkles 
 } from 'lucide-react';
@@ -166,7 +165,7 @@ export const CoperoCard: React.FC = () => {
             <div className="mt-2 p-2 rounded bg-emerald-950/30 border border-emerald-500/40 text-xs text-emerald-300 space-y-1 animate-fade-in">
               <div className="flex items-center gap-1.5 font-bold text-[11px]">
                 <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                CONSECUENCIA INMEDIATA:
+                <span>EFECTO:</span>
               </div>
               <p className="italic">"{lastReaction}"</p>
               {lastStatChanges && (
@@ -184,16 +183,15 @@ export const CoperoCard: React.FC = () => {
 
         {/* Botones de Elección Rápida estilo Copero */}
         <div className="space-y-2 pt-1">
-          <div className="text-[10px] font-bold text-zinc-500 uppercase">
-            ¿QUÉ DECISIÓN TOMÁS?
-          </div>
           {currentStep.choices.map((choice: any, idx: number) => (
             <button
               key={idx}
               onClick={() => gameStore.makeDecision(idx)}
-              className="w-full p-2.5 sm:p-3 text-left rounded border tactical-btn flex items-start gap-2.5 text-xs sm:text-sm hover:shadow-[0_0_12px_var(--crt-glow)]"
+              className="w-full p-2.5 sm:p-3 text-left rounded border tactical-btn flex items-start gap-2.5 text-xs sm:text-sm hover:shadow-[0_0_12px_var(--crt-glow)] group"
             >
-              <Send className="w-4 h-4 text-[var(--crt-primary,#55ff77)] shrink-0 mt-0.5" />
+              <span className="font-chakra font-bold text-xs px-1.5 py-0.5 rounded bg-emerald-950 border border-emerald-600/60 text-emerald-300 shrink-0 mt-0.5">
+                {idx + 1}
+              </span>
               <span className="leading-snug">{choice.label}</span>
             </button>
           ))}

@@ -103,12 +103,8 @@ export const CharacterCreator: React.FC = () => {
     <div className="w-full flex items-start justify-center p-3 sm:p-6 font-mono-military select-none pt-6 sm:pt-8 pb-36 sm:pb-32 min-h-full">
       <div className="w-full max-w-3xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 border-[var(--crt-dim,#1f6b30)] mb-4">
         
-        {/* Cabecera estilo Libreta de Enrolamiento 1982 */}
-        <div className="border-b border-[var(--crt-dim,#1f6b30)] pb-2.5 text-center space-y-1">
-          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-zinc-950 border border-[var(--crt-dim,#1f6b30)] text-[10px] text-[var(--crt-accent,#aaffbb)] uppercase tracking-wider">
-            <Sparkles className="w-3 h-3 text-yellow-400" />
-            SIMULADOR DE GUERRA HISTÓRICO 1982 • MALVINAS
-          </div>
+        {/* Cabecera */}
+        <div className="border-b border-[var(--crt-dim,#1f6b30)] pb-2 text-center">
           <h1 className="text-xl sm:text-3xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
             HÉROES DEL ATLÁNTICO 1982
           </h1>
@@ -118,12 +114,12 @@ export const CharacterCreator: React.FC = () => {
         <div 
           onClick={() => gameStore.goToRanking()}
           title="Hacé click para ver el Cuadro de Honor y Ranking Global"
-          className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded bg-black/85 border border-emerald-500/40 shadow-inner cursor-pointer hover:border-emerald-400 hover:bg-emerald-950/20 transition-all group select-none"
+          className="flex flex-wrap items-center justify-between gap-2 p-2 rounded bg-black/85 border border-emerald-500/40 shadow-inner cursor-pointer hover:border-emerald-400 hover:bg-emerald-950/20 transition-all group select-none"
         >
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
             <div className="text-[11px] font-bold text-zinc-300 uppercase tracking-wide group-hover:text-emerald-300 transition-colors">
-              COMBATIENTES ALISTADOS AL FRENTE:
+              ALISTADOS:
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -135,7 +131,7 @@ export const CharacterCreator: React.FC = () => {
             </div>
             <div className="px-2.5 py-1 rounded bg-amber-950/50 border border-amber-500/60 text-amber-300 group-hover:bg-amber-900/60 text-xs font-bold flex items-center gap-1.5 transition-all shadow-[0_0_8px_rgba(245,158,11,0.2)]">
               <Trophy className="w-3.5 h-3.5 text-yellow-400" />
-              <span>VER RANKING</span>
+              <span>RANKING</span>
             </div>
           </div>
         </div>
@@ -145,7 +141,7 @@ export const CharacterCreator: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-zinc-400 uppercase mb-1">
-                Nombre y Apellido:
+                Nombre y Apellido
               </label>
               <div className="relative">
                 <User className="w-4 h-4 text-zinc-500 absolute left-2.5 top-2.5" />
@@ -162,7 +158,7 @@ export const CharacterCreator: React.FC = () => {
 
             <div>
               <label className="block text-[11px] font-bold text-zinc-400 uppercase mb-1">
-                Apodo o Indicativo de Combate:
+                Apodo / Indicativo
               </label>
               <input
                 type="text"
@@ -177,7 +173,7 @@ export const CharacterCreator: React.FC = () => {
           {/* Fila 2: Provincia de Origen */}
           <div>
             <label className="block text-[11px] font-bold text-zinc-400 uppercase mb-1">
-              Provincia de Origen (Distrito Militar):
+              Provincia de Origen
             </label>
             <div className="relative">
               <MapPin className="w-4 h-4 text-zinc-500 absolute left-2.5 top-2.5" />
@@ -198,14 +194,14 @@ export const CharacterCreator: React.FC = () => {
           {/* Fila 3: Selección de la Fuerza Militar */}
           <div>
             <label className="block text-[11px] font-bold text-zinc-400 uppercase mb-2">
-              1. Elegí tu Fuerza Armada:
+              Fuerza Armada:
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {/* Tierra */}
               <button
                 type="button"
                 onClick={() => handleBranchChange('tierra')}
-                className={`p-3 rounded border text-left flex flex-col gap-1.5 transition-all ${
+                className={`p-3 rounded border text-left flex flex-col gap-1 transition-all ${
                   branch === 'tierra'
                     ? 'bg-[rgba(85,255,119,0.15)] border-[var(--crt-primary,#55ff77)] text-[var(--crt-accent,#aaffbb)] shadow-[0_0_12px_var(--crt-glow)]'
                     : 'bg-black/50 border-zinc-800 text-zinc-500 hover:border-zinc-700'
@@ -213,19 +209,16 @@ export const CharacterCreator: React.FC = () => {
               >
                 <div className="flex items-center justify-between">
                   <Shield className="w-5 h-5 text-emerald-400" />
-                  <span className="text-[10px] font-bold uppercase">EJÉRCITO</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">EJÉRCITO</span>
                 </div>
-                <div className="font-bold text-xs">TIERRA</div>
-                <p className="text-[10px] text-zinc-400 leading-tight">
-                  Infantería en los montes, pozos de zorro y combate cuerpo a cuerpo.
-                </p>
+                <div className="font-bold text-sm font-chakra">TIERRA</div>
               </button>
 
               {/* Aire */}
               <button
                 type="button"
                 onClick={() => handleBranchChange('aire')}
-                className={`p-3 rounded border text-left flex flex-col gap-1.5 transition-all ${
+                className={`p-3 rounded border text-left flex flex-col gap-1 transition-all ${
                   branch === 'aire'
                     ? 'bg-[rgba(85,255,119,0.15)] border-[var(--crt-primary,#55ff77)] text-[var(--crt-accent,#aaffbb)] shadow-[0_0_12px_var(--crt-glow)]'
                     : 'bg-black/50 border-zinc-800 text-zinc-500 hover:border-zinc-700'
@@ -233,19 +226,16 @@ export const CharacterCreator: React.FC = () => {
               >
                 <div className="flex items-center justify-between">
                   <Plane className="w-5 h-5 text-sky-400" />
-                  <span className="text-[10px] font-bold uppercase">FUERZA AÉREA</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400">FUERZA AÉREA</span>
                 </div>
-                <div className="font-bold text-xs">AIRE</div>
-                <p className="text-[10px] text-zinc-400 leading-tight">
-                  Cazas A-4 Skyhawk a 15m del agua, Bomb Alley y reabastecimiento en vuelo.
-                </p>
+                <div className="font-bold text-sm font-chakra">AIRE</div>
               </button>
 
               {/* Mar */}
               <button
                 type="button"
                 onClick={() => handleBranchChange('mar')}
-                className={`p-3 rounded border text-left flex flex-col gap-1.5 transition-all ${
+                className={`p-3 rounded border text-left flex flex-col gap-1 transition-all ${
                   branch === 'mar'
                     ? 'bg-[rgba(85,255,119,0.15)] border-[var(--crt-primary,#55ff77)] text-[var(--crt-accent,#aaffbb)] shadow-[0_0_12px_var(--crt-glow)]'
                     : 'bg-black/50 border-zinc-800 text-zinc-500 hover:border-zinc-700'
@@ -253,12 +243,9 @@ export const CharacterCreator: React.FC = () => {
               >
                 <div className="flex items-center justify-between">
                   <Anchor className="w-5 h-5 text-blue-400" />
-                  <span className="text-[10px] font-bold uppercase">ARMADA</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">ARMADA</span>
                 </div>
-                <div className="font-bold text-xs">MAR</div>
-                <p className="text-[10px] text-zinc-400 leading-tight">
-                  Super Étendard con Exocet, ARA Belgrano y el Portaaviones 25 de Mayo.
-                </p>
+                <div className="font-bold text-sm font-chakra">MAR</div>
               </button>
             </div>
           </div>
@@ -267,10 +254,10 @@ export const CharacterCreator: React.FC = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="block text-[11px] font-bold text-zinc-400 uppercase">
-                2. Elegí tu Rango Militar de Inicio:
+                Rango Militar:
               </label>
               <span className="text-[10px] text-amber-400 font-bold uppercase">
-                CATEGORÍA: {currentRank.category.toUpperCase()}
+                {currentRank.category.toUpperCase()}
               </span>
             </div>
 
@@ -360,7 +347,7 @@ export const CharacterCreator: React.FC = () => {
             {/* Selector fino del rango exacto */}
             <div className="pt-1">
               <label className="block text-[10px] text-zinc-400 uppercase mb-1">
-                Ajustar rango específico del escalafón:
+                Escalafón:
               </label>
               <select
                 value={chosenRankIndex}
@@ -382,7 +369,7 @@ export const CharacterCreator: React.FC = () => {
             <div className="p-3 rounded bg-zinc-950/90 border border-[var(--crt-dim,#1f6b30)] space-y-1">
               <div className="flex items-center gap-1.5 text-xs text-[var(--crt-accent,#aaffbb)] font-bold">
                 <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                <span>HISTORIA Y ROL DE {currentRank.title.toUpperCase()}:</span>
+                <span>ROL • {currentRank.title.toUpperCase()}:</span>
               </div>
               <p className="text-xs text-zinc-300 leading-relaxed italic">
                 "{getRankStoryDescription()}"
@@ -396,7 +383,7 @@ export const CharacterCreator: React.FC = () => {
               type="submit"
               className="w-full py-3 px-4 rounded font-chakra font-bold text-sm sm:text-base uppercase tracking-wider tactical-btn flex items-center justify-center gap-2 border-2 border-[var(--crt-primary,#55ff77)] shadow-[0_0_15px_var(--crt-glow)]"
             >
-              <span>JURAR LA BANDERA COMO {currentRank.title.toUpperCase()}</span>
+              <span>ENTRAR EN COMBATE • {currentRank.title.toUpperCase()}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

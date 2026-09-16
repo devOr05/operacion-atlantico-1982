@@ -11,7 +11,7 @@ import {
   Radio
 } from 'lucide-react';
 import { gameStore, getRankings, type RankingEntry } from '../../core/state/gameStore';
-import { fetchGlobalRankings, isSupabaseConfigured } from '../../services/supabase';
+import { fetchGlobalRankings } from '../../services/supabase';
 
 export const RankingScreen: React.FC = () => {
   const [rankings, setRankings] = useState<RankingEntry[]>([]);
@@ -66,7 +66,7 @@ export const RankingScreen: React.FC = () => {
         <div className="text-center border-b border-[var(--crt-dim,#1f6b30)] pb-2.5 space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded bg-black border border-[var(--crt-dim,#1f6b30)] text-[11px] text-[var(--crt-accent,#aaffbb)] uppercase tracking-wider">
             <Trophy className="w-3.5 h-3.5 text-yellow-400" />
-            CUADRO DE HONOR Y SALÓN DE LA GLORIA 1982
+            CUADRO DE HONOR 1982
           </div>
           <h1 className="text-xl sm:text-3xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
             TOP 1.000 GLOBAL ONLINE
@@ -78,17 +78,17 @@ export const RankingScreen: React.FC = () => {
           <div className="flex items-center gap-2 text-xs">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-amber-950/50 border border-amber-500/70 text-amber-300 font-bold">
               <Globe className="w-4 h-4 text-amber-400" />
-              <span>TOP 1.000 EN LÍNEA</span>
+              <span>TOP 1.000</span>
             </div>
             <span className="text-[10px] text-zinc-500 hidden sm:inline">
-              • {rankings.length} COMBATIENTES EN EL REGISTRO
+              • {rankings.length} REGISTRADOS
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
               <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-              <span className="hidden md:inline">{isSupabaseConfigured ? 'SUPABASE' : 'RED GLOBAL'} ACTIVA</span>
+              <span className="hidden md:inline">ONLINE</span>
             </span>
 
             <button
@@ -107,11 +107,11 @@ export const RankingScreen: React.FC = () => {
           {loading ? (
             <div className="text-center py-12 text-zinc-400 text-xs italic flex flex-col items-center gap-2">
               <RefreshCw className="w-5 h-5 animate-spin text-emerald-400" />
-              <span>Sincronizando el Top 1.000 con el servidor central...</span>
+              <span>Sincronizando servidor central...</span>
             </div>
           ) : rankings.length === 0 ? (
             <div className="text-center py-10 text-zinc-500 text-xs italic">
-              No hay partidas registradas aún. ¡Sé el primero en jurar la bandera!
+              Sin registros aún.
             </div>
           ) : (
             rankings.map((entry: RankingEntry, idx: number) => {
@@ -190,7 +190,7 @@ export const RankingScreen: React.FC = () => {
             className="w-full sm:w-auto py-2.5 px-6 rounded border tactical-btn flex items-center justify-center gap-2 text-xs sm:text-sm font-bold uppercase hover:shadow-[0_0_12px_var(--crt-glow)]"
           >
             <RotateCcw className="w-4 h-4 text-[var(--crt-primary,#55ff77)]" />
-            <span>JUGAR OTRA VEZ (NUEVO COMBATIENTE)</span>
+            <span>NUEVO COMBATIENTE</span>
           </button>
         </div>
 
