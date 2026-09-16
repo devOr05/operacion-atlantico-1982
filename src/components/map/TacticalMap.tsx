@@ -67,10 +67,10 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
       </div>
 
       {/* Pantalla del Radar SVG con animaciones */}
-      <div className="relative flex-1 w-full min-h-[220px] sm:min-h-[280px] flex items-center justify-center p-1">
+      <div className="relative flex-1 min-h-[160px] w-full flex items-center justify-center p-1 overflow-hidden">
         <svg 
           viewBox="0 0 1000 650" 
-          className="w-full h-full max-h-[460px]"
+          className="w-full h-full max-h-[260px] sm:max-h-[350px]"
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
@@ -291,27 +291,45 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
         </svg>
       </div>
 
-      {/* Panel de información del nodo seleccionado: UBICADO ABAJO DEL MAPA, NO ENCIMA */}
+      {/* Panel de información e inteligencia táctica del nodo seleccionado */}
       {selectedNode && (
-        <div className="p-2 sm:p-2.5 bg-black/95 border-t border-[var(--crt-dim,#1f6b30)] text-[11px] font-mono-military shrink-0">
-          <div className="flex items-center justify-between gap-1 border-b border-[var(--crt-dim,#1f6b30)]/60 pb-1 mb-1">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[var(--crt-primary,#55ff77)]" />
-              <span className="font-bold text-[var(--crt-primary,#55ff77)] uppercase truncate">
+        <div className="p-2 sm:p-3 bg-[#020704] border-t-2 border-[var(--crt-primary,#55ff77)]/60 text-xs font-mono-military shrink-0 space-y-1.5">
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-[var(--crt-dim,#1f6b30)]/60 pb-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <MapPin className="w-3.5 h-3.5 text-[var(--crt-primary,#55ff77)] shrink-0" />
+              <span className="font-bold text-xs sm:text-sm text-[var(--crt-primary,#55ff77)] uppercase truncate">
                 {selectedNode.name}
               </span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-700 text-yellow-400 font-bold">
+                {selectedNode.codeName}
+              </span>
             </div>
-            <span className={`px-1.5 py-0.5 text-[9px] rounded font-bold uppercase ${
-              selectedNode.status === 'critical' ? 'bg-red-950 text-red-400 border border-red-600' :
-              selectedNode.status === 'contested' ? 'bg-yellow-950 text-yellow-400 border border-yellow-600' :
-              'bg-green-950 text-green-400 border border-green-600'
-            }`}>
-              {selectedNode.status}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className={`px-2 py-0.5 text-[9px] rounded font-bold uppercase ${
+                selectedNode.status === 'critical' ? 'bg-red-950 text-red-400 border border-red-600' :
+                selectedNode.status === 'contested' ? 'bg-yellow-950 text-yellow-400 border border-yellow-600' :
+                'bg-green-950 text-green-400 border border-green-600'
+              }`}>
+                {selectedNode.status.toUpperCase()}
+              </span>
+            </div>
           </div>
-          <p className="text-[10px] sm:text-xs text-zinc-300 leading-snug line-clamp-2">
+
+          <div className="text-[10px] sm:text-[11px] text-zinc-400">
+            <span className="text-zinc-500 font-bold">GUARNICIÓN: </span>
+            <span className="text-[var(--crt-accent,#aaffbb)]">{selectedNode.garrison}</span>
+          </div>
+
+          <p className="text-[11px] sm:text-xs text-zinc-200 leading-snug">
             {selectedNode.description}
           </p>
+
+          {selectedNode.intel && (
+            <div className="p-1 rounded bg-amber-950/30 border border-amber-500/30 text-[10px] sm:text-[11px] text-amber-300 leading-snug">
+              <span className="font-bold text-amber-400">INTELIGENCIA DE COMBATE: </span>
+              {selectedNode.intel}
+            </div>
+          )}
         </div>
       )}
 

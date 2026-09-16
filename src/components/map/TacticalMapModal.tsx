@@ -10,10 +10,10 @@ export const TacticalMapModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm select-none font-mono-military animate-fade-in">
-      <div className="w-full max-w-4xl bg-[#030905] tactical-border rounded-lg shadow-2xl flex flex-col max-h-[92vh] overflow-hidden border-2 border-[var(--crt-primary,#55ff77)] glow-border">
+      <div className="w-full max-w-4xl bg-[#030905] tactical-border rounded-lg shadow-2xl flex flex-col max-h-[95vh] overflow-hidden border-2 border-[var(--crt-primary,#55ff77)] glow-border">
         
         {/* Cabecera del Modal */}
-        <div className="flex items-center justify-between px-3 py-2 bg-black/90 border-b border-[var(--crt-dim,#1f6b30)]">
+        <div className="shrink-0 flex items-center justify-between px-3 py-2 bg-black/90 border-b border-[var(--crt-dim,#1f6b30)]">
           <div className="flex items-center gap-2">
             <Compass className="w-4 h-4 text-[var(--crt-primary,#55ff77)] animate-spin" style={{ animationDuration: '10s' }} />
             <span className="font-chakra font-bold text-xs sm:text-sm text-[var(--crt-primary,#55ff77)] uppercase glow-text">
@@ -30,8 +30,8 @@ export const TacticalMapModal: React.FC = () => {
           </button>
         </div>
 
-        {/* Contenido del Mapa */}
-        <div className="flex-1 w-full min-h-[380px] sm:min-h-[460px] p-2 bg-black/95">
+        {/* Contenido del Mapa con Inteligencia Táctica */}
+        <div className="flex-1 w-full min-h-0 flex flex-col p-1 sm:p-2 bg-black/95 overflow-hidden">
           <TacticalMap 
             currentLocationName="PUERTO ARGENTINO / TOAS"
             stepNumber={1}
@@ -39,8 +39,8 @@ export const TacticalMapModal: React.FC = () => {
           />
         </div>
 
-        {/* Pie con indicaciones */}
-        <div className="flex items-center justify-between px-3 py-1.5 bg-black/90 border-t border-[var(--crt-dim,#1f6b30)] text-[10px] text-zinc-400">
+        {/* Pie con indicaciones siempre visible */}
+        <div className="shrink-0 flex items-center justify-between px-3 py-1.5 bg-black/90 border-t border-[var(--crt-dim,#1f6b30)] text-[10px] text-zinc-400">
           <span className="flex items-center gap-1 text-[var(--crt-accent,#aaffbb)]">
             <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
             HACÉ CLICK EN CUALQUIER NODO DEL MAPA PARA VER SU INTELIGENCIA Y ESTADO

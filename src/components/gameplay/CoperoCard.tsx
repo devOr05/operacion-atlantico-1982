@@ -46,8 +46,8 @@ export const CoperoCard: React.FC = () => {
       {/* Panel Izquierdo: Mapa Táctico de Malvinas (visible siempre en desktop, colapsable en móvil) */}
       <div className={`w-full lg:w-[48%] flex flex-col transition-all duration-300 ${
         showMobileMap 
-          ? 'h-[340px] block' 
-          : 'hidden lg:flex lg:h-[calc(100vh-140px)] lg:sticky lg:top-0'
+          ? 'min-h-[420px] block' 
+          : 'hidden lg:flex lg:min-h-[500px] lg:max-h-[calc(100vh-140px)] lg:sticky lg:top-0'
       }`}>
         <TacticalMap 
           currentLocationName={currentStep.location} 
