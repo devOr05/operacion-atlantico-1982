@@ -63,8 +63,14 @@ export async function incrementGlobalCombatientes(): Promise<number> {
 }
 
 /**
- * Consulta las 1000 mejores partidas globales desde Supabase
+ * Consulta las 1000 mejores partidas globales desde Supabase (excluyendo partidas de prueba)
  */
+const EXCLUDED_TEST_IDS = new Set([
+  'run-1789516506506', // Jjj "Kkk"
+  'run-1789515616408', // ssss "sssss"
+  'run-1789516379779'  // ddd "ddd"
+]);
+
 export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
   if (!supabase) return null;
 
@@ -72,6 +78,7 @@ export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
     const { data, error } = await supabase
       .from('rankings')
       .select('*')
+      .not('id', 'in', '("run-1789516506506","run-1789515616408","run-1789516379779")')
       .order('score', { ascending: false })
       .limit(1000);
 
@@ -80,18 +87,20 @@ export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
       return null;
     }
 
-    return (data || []).map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      nickname: row.nickname,
-      province: row.province,
-      branch: row.branch,
-      rankTitle: row.rank_title,
-      warOutcome: row.war_outcome,
-      score: row.score,
-      medalsCount: row.medals_count || 0,
-      date: row.date
-    }));
+    return (data || [])
+      .filter((row: any) => !EXCLUDED_TEST_IDS.has(row.id))
+      .map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        nickname: row.nickname,
+        province: row.province,
+        branch: row.branch,
+        rankTitle: row.rank_title,
+        warOutcome: row.war_outcome,
+        score: row.score,
+        medalsCount: row.medals_count || 0,
+        date: row.date
+      }));
   } catch (e) {
     console.warn('Fallo de conexión con Supabase rankings:', e);
     return null;
