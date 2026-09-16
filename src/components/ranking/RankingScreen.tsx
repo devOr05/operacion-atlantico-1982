@@ -10,7 +10,7 @@ import {
   RefreshCw,
   Radio
 } from 'lucide-react';
-import { gameStore, getRankings, type RankingEntry } from '../../core/state/gameStore';
+import { gameStore, getRankings, isTestRanking, type RankingEntry } from '../../core/state/gameStore';
 import { fetchGlobalRankings } from '../../services/supabase';
 
 export const RankingScreen: React.FC = () => {
@@ -21,10 +21,10 @@ export const RankingScreen: React.FC = () => {
     setLoading(true);
     const data = await fetchGlobalRankings();
     if (data && data.length > 0) {
-      setRankings(data);
+      setRankings(data.filter(r => !isTestRanking(r)));
     } else {
-      // Si no hay respuesta remota aún, mostrar lista inicial
-      setRankings(getRankings());
+      // Si no hay respuesta remota aún, mostrar lista inicial limpia
+      setRankings(getRankings().filter(r => !isTestRanking(r)));
     }
     setLoading(false);
   };

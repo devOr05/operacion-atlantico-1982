@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { RankingEntry } from '../core/state/gameStore';
+import { type RankingEntry, isTestRanking } from '../core/state/gameStore';
 
 // Variables de entorno de Supabase (configurables en .env o en el panel de Vercel)
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://wifkmlsyckfmbpzvcazx.supabase.co';
@@ -65,12 +65,6 @@ export async function incrementGlobalCombatientes(): Promise<number> {
 /**
  * Consulta las 1000 mejores partidas globales desde Supabase (excluyendo partidas de prueba)
  */
-const EXCLUDED_TEST_IDS = new Set([
-  'run-1789516506506', // Jjj "Kkk"
-  'run-1789515616408', // ssss "sssss"
-  'run-1789516379779'  // ddd "ddd"
-]);
-
 export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
   if (!supabase) return null;
 
@@ -78,7 +72,6 @@ export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
     const { data, error } = await supabase
       .from('rankings')
       .select('*')
-      .not('id', 'in', '("run-1789516506506","run-1789515616408","run-1789516379779")')
       .order('score', { ascending: false })
       .limit(1000);
 
@@ -88,7 +81,7 @@ export async function fetchGlobalRankings(): Promise<RankingEntry[] | null> {
     }
 
     return (data || [])
-      .filter((row: any) => !EXCLUDED_TEST_IDS.has(row.id))
+      .filter((row: any) => !isTestRanking({ id: row.id, name: row.name, nickname: row.nickname }))
       .map((row: any) => ({
         id: row.id,
         name: row.name,

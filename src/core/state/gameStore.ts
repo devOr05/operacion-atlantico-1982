@@ -59,12 +59,34 @@ export interface RankingEntry {
   date: string;
 }
 
+export function isTestRanking(entry: { id?: string; name?: string; nickname?: string }): boolean {
+  if (!entry) return true;
+  const id = entry.id || '';
+  if (id === 'run-1789516379779' || id === 'run-1789515616408' || id === 'run-1789516506506') {
+    return true;
+  }
+  const n = (entry.name || '').trim().toLowerCase();
+  const nick = (entry.nickname || '').trim().toLowerCase();
+  if (n === 'ddd' || nick === 'ddd') return true;
+  if (n === 'ssss' || nick === 'ssss' || nick === 'sssss') return true;
+  if (n === 'jjj' || nick === 'kkk') return true;
+  if (n === 'test' || nick === 'test' || n === 'prueba') return true;
+  return false;
+}
+
 const RANKING_STORAGE_KEY = 'heroes_atlantico_1982_rankings';
 
 export function getRankings(): RankingEntry[] {
   try {
     const raw = localStorage.getItem(RANKING_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed: RankingEntry[] = JSON.parse(raw);
+      const cleaned = parsed.filter(entry => !isTestRanking(entry));
+      if (cleaned.length !== parsed.length) {
+        localStorage.setItem(RANKING_STORAGE_KEY, JSON.stringify(cleaned));
+      }
+      return cleaned;
+    }
   } catch (e) {
     console.error(e);
   }
@@ -109,10 +131,11 @@ export function getRankings(): RankingEntry[] {
 }
 
 export function saveRankingEntry(entry: RankingEntry) {
+  if (isTestRanking(entry)) return;
   try {
     const list = getRankings();
     // Reemplazar si existe el mismo ID
-    const filtered = list.filter(r => r.id !== entry.id);
+    const filtered = list.filter(r => r.id !== entry.id && !isTestRanking(r));
     filtered.push(entry);
     filtered.sort((a, b) => b.score - a.score);
     localStorage.setItem(RANKING_STORAGE_KEY, JSON.stringify(filtered.slice(0, 1000)));
