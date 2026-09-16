@@ -63,7 +63,7 @@ export const RankingScreen: React.FC = () => {
       <div className="w-full max-w-3xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 border-[var(--crt-dim,#1f6b30)] mb-4">
         
         {/* Cabecera del Ranking */}
-        <div className="text-center border-b border-[var(--crt-dim,#1f6b30)] pb-3 space-y-1">
+        <div className="text-center border-b border-[var(--crt-dim,#1f6b30)] pb-2.5 space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded bg-black border border-[var(--crt-dim,#1f6b30)] text-[11px] text-[var(--crt-accent,#aaffbb)] uppercase tracking-wider">
             <Trophy className="w-3.5 h-3.5 text-yellow-400" />
             CUADRO DE HONOR Y SALÓN DE LA GLORIA 1982
@@ -71,9 +71,6 @@ export const RankingScreen: React.FC = () => {
           <h1 className="text-xl sm:text-3xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
             TOP 1.000 GLOBAL ONLINE
           </h1>
-          <p className="text-xs text-zinc-400">
-            TABLA DE POSICIONES EN VIVO COMPARTIDA ENTRE TODOS LOS JUGADORES DEL MUNDO
-          </p>
         </div>
 
         {/* Barra de control y estado de red */}

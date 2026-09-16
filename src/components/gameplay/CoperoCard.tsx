@@ -33,13 +33,13 @@ export const CoperoCard: React.FC = () => {
       <div className="w-full lg:hidden flex items-center justify-between p-2 bg-black/80 rounded border border-[var(--crt-dim,#1f6b30)] text-xs">
         <div className="flex items-center gap-2">
           <MapPin className="w-3.5 h-3.5 text-[var(--crt-primary,#55ff77)]" />
-          <span className="text-[11px] text-zinc-300">UBICACIÓN: <b className="text-[var(--crt-primary,#55ff77)]">{currentStep.location}</b></span>
+          <span className="text-[11px] text-zinc-300">ZONA: <b className="text-[var(--crt-primary,#55ff77)]">{currentStep.location}</b></span>
         </div>
         <button
           onClick={() => setShowMobileMap(!showMobileMap)}
           className="px-2.5 py-1 text-[11px] rounded bg-[var(--crt-dim,#1f6b30)]/40 border border-[var(--crt-primary,#55ff77)] text-[var(--crt-primary,#55ff77)] font-bold hover:bg-[var(--crt-primary,#55ff77)] hover:text-black transition-all"
         >
-          {showMobileMap ? '▲ OCULTAR MAPA' : '▼ VER MAPA RADAR'}
+          {showMobileMap ? '▲ OCULTAR' : '▼ VER MAPA'}
         </button>
       </div>
 
@@ -79,12 +79,9 @@ export const CoperoCard: React.FC = () => {
           </div>
 
           {/* Rango militar actual con insignia */}
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] text-zinc-500 uppercase tracking-wider">RANGO MILITAR:</span>
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-950/40 border border-amber-500/50 text-amber-300 font-bold text-xs">
-              <Medal className="w-3.5 h-3.5 text-yellow-400 animate-pulse" />
-              <span>{currentRank.title.toUpperCase()}</span>
-            </div>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-950/50 border border-amber-500/60 text-amber-300 font-bold text-xs shadow-[0_0_8px_rgba(245,158,11,0.2)]">
+            <Medal className="w-3.5 h-3.5 text-yellow-400 animate-pulse" />
+            <span>{currentRank.title.toUpperCase()}</span>
           </div>
         </div>
 
