@@ -8,9 +8,21 @@ import { RankingScreen } from './components/ranking/RankingScreen';
 import { DossierModal } from './components/teletype/DossierModal';
 import { TacticalMapModal } from './components/map/TacticalMapModal';
 import { useGameStore, gameStore } from './core/state/gameStore';
+import { malvinasBgm } from './core/audio/malvinasBgm';
 
 export const App: React.FC = () => {
   const { stage } = useGameStore();
+
+  // Gestión de audio según la pantalla:
+  // - Bienvenida ('creation') y Ranking final ('ranking') -> Marcha de las Malvinas
+  // - Partida de combate táctico ('playing') -> Dron Táctico Dark Synth 1982
+  React.useEffect(() => {
+    if (stage === 'creation' || stage === 'ranking' || stage === 'summary') {
+      malvinasBgm.setTrack('marcha');
+    } else if (stage === 'playing') {
+      malvinasBgm.setTrack('dron');
+    }
+  }, [stage]);
 
   React.useEffect(() => {
     let started = false;

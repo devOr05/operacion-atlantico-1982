@@ -1,6 +1,9 @@
-// Motor de Música Procedural Diegética 1982: "Marcha de las Malvinas"
-// Síntesis en tiempo real estilo Chiptune / Synthwave analógico de los 80.
-// Cero dependencias externas, calidad de estudio a 44.1/48kHz, bucle perfecto.
+// Motor de Audio Diegético 1982: Banda Sonora Dinámica
+// Track A: "Marcha de las Malvinas" (Épica, solemne, 100% reconocible para Bienvenida y Ranking)
+// Track B: "Dron Táctico Dark Synth 1982" (Tensión fría de radar, arpegios Carpenter/Vangelis y sonar para Juego)
+// 100% Síntesis Web Audio API en tiempo real - Cero descargas externas - 44.1/48kHz
+
+export type BgmTrack = 'marcha' | 'dron';
 
 export class MalvinasBgmEngine {
   private ctx: AudioContext | null = null;
@@ -8,38 +11,41 @@ export class MalvinasBgmEngine {
   private isMuted: boolean = false;
   private masterGain: GainNode | null = null;
   private timerId: number | null = null;
+  private currentTrack: BgmTrack = 'marcha';
+
   private currentBeat: number = 0;
   private nextBeatTime: number = 0;
-  private tempoBpm: number = 98; // Tempo marcial solemne
 
-  // Frecuencias base temperadas
+  // Frecuencias estándar temperadas (A4 = 440Hz)
   private notes: Record<string, number> = {
-    // Escala central y armónicos
-    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, Bb3: 233.08, B3: 246.94,
-    C4: 261.63, D4: 293.66, Eb4: 311.13, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, Bb4: 466.16, B4: 493.88,
+    // Bajos profundos
+    D1: 36.71, E1: 41.20, F1: 43.65, G1: 49.00, A1: 55.00, Bb1: 58.27, C2: 65.41, D2: 73.42, E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00, Bb2: 116.54,
+    // Rango medio
+    C3: 130.81, Csharp3: 138.59, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, Bb3: 233.08, B3: 246.94,
+    C4: 261.63, Csharp4: 277.18, D4: 293.66, Eb4: 311.13, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, Bb4: 466.16, B4: 493.88,
+    // Agudos melódicos
     C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, Bb5: 932.33,
-    // Bajos
-    F2: 87.31, G2: 98.00, A2: 110.00, Bb2: 116.54, C2: 65.41, D2: 73.42, E2: 82.41
+    C6: 1046.50, E6: 1318.51, A6: 1760.00
   };
 
-  // Melodía completa y auténtica de la Marcha de las Malvinas (en F Mayor)
-  // Duraciones en beats (1 beat = 1 tiempo de negra a 98 BPM)
-  private melodyScore: Array<{ note: string | null; duration: number }> = [
-    // --- INTRO (4 compases / 16 beats): Redoble y acordes atmosféricos ---
-    { note: null, duration: 16 },
+  // =========================================================================
+  // 1. PARTITURA AUTÉNTICA: MARCHA DE LAS MALVINAS (Fa Mayor - 100 BPM)
+  // Melodía inconfundible: "¡Tras su man-to de ne-bli-nas, no las he-mos de ol-vi-dar!..."
+  // =========================================================================
+  private marchaScore: Array<{ note: string | null; duration: number }> = [
+    // Introducción marcial con redoble y fanfarria (8 beats)
+    { note: null, duration: 8 },
 
-    // --- ESTROFA 1: "Tras su manto de neblinas..." ---
-    { note: 'A4', duration: 0.75 },
-    { note: 'G4', duration: 0.25 },
+    // "¡Tras su man-to de ne-bli-nas..." (LA - LA - LA - SOL - FA - DO)
+    { note: 'A4', duration: 1.0 },
+    { note: 'A4', duration: 0.5 },
+    { note: 'A4', duration: 0.5 },
+    { note: 'G4', duration: 0.5 },
     { note: 'F4', duration: 0.5 },
-    { note: 'C4', duration: 0.5 },
-    { note: 'C4', duration: 0.5 },
-    { note: 'C4', duration: 0.5 },
-    { note: 'D4', duration: 0.5 },
     { note: 'C4', duration: 1.5 },
     { note: null, duration: 0.5 },
 
-    // "...no las hemos de olvidar"
+    // "...no las he-mos de ol-vi-dar!" (DO - DO - RE - DO - RE - FA - MI)
     { note: 'C4', duration: 0.5 },
     { note: 'C4', duration: 0.5 },
     { note: 'D4', duration: 0.5 },
@@ -49,39 +55,39 @@ export class MalvinasBgmEngine {
     { note: 'E4', duration: 2.0 },
     { note: null, duration: 0.5 },
 
-    // "¡Las Malvinas, Argentinas!"
+    // "¡Las Mal-vi-nas, Ar-gen-ti-nas!" (DO - MI - SOL - DO' ... FA - SOL - LA - LA - FA)
     { note: 'C4', duration: 0.5 },
     { note: 'E4', duration: 0.5 },
     { note: 'G4', duration: 0.5 },
-    { note: 'C5', duration: 1.0 },
+    { note: 'C5', duration: 1.5 },
+    { note: null, duration: 0.5 },
     { note: 'F4', duration: 0.5 },
     { note: 'G4', duration: 0.5 },
     { note: 'A4', duration: 1.0 },
-    { note: 'F4', duration: 1.0 },
+    { note: 'A4', duration: 1.0 },
+    { note: 'F4', duration: 2.0 },
     { note: null, duration: 0.5 },
 
-    // "clama el viento y ruge el mar"
+    // "cla-ma el vien-to y ru-ge el mar!" (FA - LA - SOL - FA - MI - FA - SOL)
     { note: 'F4', duration: 0.5 },
     { note: 'A4', duration: 0.5 },
-    { note: 'G4', duration: 0.75 },
-    { note: 'F4', duration: 0.25 },
+    { note: 'G4', duration: 0.5 },
+    { note: 'F4', duration: 0.5 },
     { note: 'E4', duration: 0.5 },
     { note: 'F4', duration: 0.5 },
-    { note: 'G4', duration: 2.0 },
+    { note: 'G4', duration: 2.5 },
     { note: null, duration: 0.5 },
 
-    // --- ESTROFA 2: "Ni de aquellos horizontes..." ---
-    { note: 'A4', duration: 0.75 },
-    { note: 'G4', duration: 0.25 },
+    // "Ni de a-que-llos ho-ri-zon-tes..." (LA - LA - LA - SOL - FA - DO)
+    { note: 'A4', duration: 1.0 },
+    { note: 'A4', duration: 0.5 },
+    { note: 'A4', duration: 0.5 },
+    { note: 'G4', duration: 0.5 },
     { note: 'F4', duration: 0.5 },
-    { note: 'C4', duration: 0.5 },
-    { note: 'C4', duration: 0.5 },
-    { note: 'C4', duration: 0.5 },
-    { note: 'D4', duration: 0.5 },
     { note: 'C4', duration: 1.5 },
     { note: null, duration: 0.5 },
 
-    // "...nuestra enseña han de arrancar"
+    // "...nues-tra en-se-ña han de ar-ran-car" (DO - DO - RE - DO - RE - FA - MI)
     { note: 'C4', duration: 0.5 },
     { note: 'C4', duration: 0.5 },
     { note: 'D4', duration: 0.5 },
@@ -91,56 +97,63 @@ export class MalvinasBgmEngine {
     { note: 'E4', duration: 2.0 },
     { note: null, duration: 0.5 },
 
-    // "¡Las Malvinas, Argentinas!"
+    // "¡Las Mal-vi-nas, Ar-gen-ti-nas!" (DO - MI - SOL - DO' ... FA - SOL - LA - LA - FA)
     { note: 'C4', duration: 0.5 },
     { note: 'E4', duration: 0.5 },
     { note: 'G4', duration: 0.5 },
-    { note: 'C5', duration: 1.0 },
+    { note: 'C5', duration: 1.5 },
+    { note: null, duration: 0.5 },
     { note: 'F4', duration: 0.5 },
     { note: 'G4', duration: 0.5 },
     { note: 'A4', duration: 1.0 },
-    { note: 'F4', duration: 1.0 },
+    { note: 'A4', duration: 1.0 },
+    { note: 'F4', duration: 2.0 },
     { note: null, duration: 0.5 },
 
-    // "¡Clama el viento y ruge el mar! (Final Épico y Solemne)"
+    // "¡cla-ma el vien-to y ru-ge el mar! (Final Triunfal)" (FA - LA - SOL - FA - MI - SOL - FA)
+    { note: 'F4', duration: 0.5 },
     { note: 'A4', duration: 0.5 },
-    { note: 'C5', duration: 0.5 },
-    { note: 'Bb4', duration: 0.75 },
-    { note: 'G4', duration: 0.25 },
+    { note: 'G4', duration: 0.5 },
+    { note: 'F4', duration: 0.5 },
     { note: 'E4', duration: 0.5 },
     { note: 'G4', duration: 0.5 },
-    { note: 'F4', duration: 3.0 },
+    { note: 'F4', duration: 3.5 },
     { note: null, duration: 2.0 }
   ];
 
-  // Acordes por compás (armonía militar en F mayor)
-  // Cada entrada cubre 4 beats (1 compás de 4/4)
-  private chordProgression: Array<{ chord: string[]; bass: string }> = [
-    // Intro
+  // Armonía para la Marcha (cada entrada son 4 beats)
+  private marchaChords: Array<{ chord: string[]; bass: string }> = [
     { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
     { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
-    { chord: ['Bb3', 'D4', 'F4'], bass: 'Bb2' },
-    { chord: ['C3', 'G3', 'C4'], bass: 'C2' },
-
-    // Estrofa 1
     { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
     { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
     { chord: ['Bb3', 'D4', 'F4'], bass: 'Bb2' },
     { chord: ['C3', 'G3', 'C4'], bass: 'C2' },
     { chord: ['C3', 'E3', 'G3'], bass: 'C2' },
-    { chord: ['C3', 'E3', 'G3'], bass: 'C2' },
-    { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
-    { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
-
-    // Estrofa 2
     { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
     { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
     { chord: ['Bb3', 'D4', 'F4'], bass: 'Bb2' },
     { chord: ['C3', 'G3', 'C4'], bass: 'C2' },
+    { chord: ['F3', 'A3', 'C4'], bass: 'F2' },
     { chord: ['D3', 'F3', 'A3'], bass: 'D2' },
     { chord: ['Bb3', 'D4', 'F4'], bass: 'Bb2' },
-    { chord: ['C3', 'G3', 'Bb3', 'E4'], bass: 'C2' },
+    { chord: ['C3', 'E3', 'G3', 'Bb3'], bass: 'C2' },
     { chord: ['F3', 'A3', 'C4'], bass: 'F2' }
+  ];
+
+  // =========================================================================
+  // 2. DRON TÁCTICO DARK SYNTH 1982 (Re Menor - 82 BPM)
+  // Tensión fría de radar, arpegios nocturnos de guerra fría y sonar de submarino
+  // =========================================================================
+  private dronChords: Array<{ chord: string[]; bass: string; root: string }> = [
+    { chord: ['D3', 'F3', 'A3'], bass: 'D1', root: 'D' },
+    { chord: ['D3', 'F3', 'A3'], bass: 'D1', root: 'D' },
+    { chord: ['Bb2', 'D3', 'F3'], bass: 'Bb1', root: 'Bb' },
+    { chord: ['A2', 'Csharp3', 'E3'], bass: 'A1', root: 'A' },
+    { chord: ['G2', 'Bb2', 'D3'], bass: 'G1', root: 'G' },
+    { chord: ['A2', 'Csharp3', 'E3'], bass: 'A1', root: 'A' },
+    { chord: ['D3', 'F3', 'A3'], bass: 'D1', root: 'D' },
+    { chord: ['D3', 'F3', 'A3'], bass: 'D1', root: 'D' }
   ];
 
   private initContext() {
@@ -149,7 +162,7 @@ export class MalvinasBgmEngine {
       if (AudioCtx) {
         this.ctx = new AudioCtx();
         this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.setValueAtTime(0.20, this.ctx.currentTime); // Volumen equilibrado de fondo
+        this.masterGain.gain.setValueAtTime(0.22, this.ctx.currentTime);
         this.masterGain.connect(this.ctx.destination);
       }
     }
@@ -158,7 +171,20 @@ export class MalvinasBgmEngine {
     }
   }
 
-  // Comienza la reproducción en bucle continuo
+  public getTrack(): BgmTrack {
+    return this.currentTrack;
+  }
+
+  // Cambio dinámico de pista sin interrupciones abruptas
+  public setTrack(track: BgmTrack) {
+    if (this.currentTrack === track) return;
+    this.currentTrack = track;
+    this.currentBeat = 0;
+    if (this.ctx) {
+      this.nextBeatTime = this.ctx.currentTime + 0.15;
+    }
+  }
+
   public start() {
     this.initContext();
     if (this.isPlaying || !this.ctx) return;
@@ -169,7 +195,6 @@ export class MalvinasBgmEngine {
     this.scheduleLoop();
   }
 
-  // Detiene la música
   public stop() {
     this.isPlaying = false;
     if (this.timerId !== null) {
@@ -185,7 +210,7 @@ export class MalvinasBgmEngine {
   public setMuted(muted: boolean) {
     this.isMuted = muted;
     if (this.masterGain && this.ctx) {
-      const targetGain = muted ? 0.0001 : 0.20;
+      const targetGain = muted ? 0.0001 : 0.22;
       this.masterGain.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.08);
     }
   }
@@ -203,62 +228,63 @@ export class MalvinasBgmEngine {
     }
   }
 
-  // Programador de eventos rítmicos por pulsos (Clock Scheduler)
+  // Bucle central de sincronización
   private scheduleLoop = () => {
     if (!this.isPlaying || !this.ctx || !this.masterGain) return;
 
-    const secondsPerBeat = 60 / this.tempoBpm;
-    const scheduleAhead = 0.25; // 250ms anticipación para precisión militar
+    const tempo = this.currentTrack === 'marcha' ? 100 : 82;
+    const secondsPerBeat = 60 / tempo;
+    const scheduleAhead = 0.25;
 
     while (this.nextBeatTime < this.ctx.currentTime + scheduleAhead) {
       const time = this.nextBeatTime;
-      const beatIndex = this.currentBeat;
+      const beat = this.currentBeat;
 
-      // 1. Percusión de marcha 1982 (Bombo en 1 y 3, redoble / caja analógica en 2 y 4)
-      const barBeat = beatIndex % 4;
-      if (barBeat === 0 || barBeat === 2) {
-        this.playKick(time);
-      } else if (barBeat === 1 || barBeat === 3) {
-        this.playSnare(time);
+      if (this.currentTrack === 'marcha') {
+        this.renderMarchaStep(beat, time, secondsPerBeat);
+      } else {
+        this.renderDronStep(beat, time, secondsPerBeat);
       }
-
-      // 2. Línea de bajo arpegiado analógico de los 80 (cada medio tiempo)
-      const barIndex = Math.floor(beatIndex / 4) % this.chordProgression.length;
-      const currentHarmony = this.chordProgression[barIndex];
-      const bassFreq = this.notes[currentHarmony.bass] || 87.31;
-      
-      // Bajo en semicorcheas/corcheas con pulso octavado clásico synthwave
-      this.playBassNote(bassFreq, time, secondsPerBeat * 0.45);
-      this.playBassNote(bassFreq * 2, time + (secondsPerBeat * 0.5), secondsPerBeat * 0.4);
-
-      // 3. Colchón armónico analógico (Pad de sintetizador) en el inicio de cada compás
-      if (barBeat === 0) {
-        this.playChordPad(currentHarmony.chord, time, secondsPerBeat * 3.8);
-      }
-
-      // 4. Voz Líder: Melodía de la Marcha de las Malvinas
-      this.playMelodyStep(beatIndex, time, secondsPerBeat);
 
       this.nextBeatTime += secondsPerBeat;
       this.currentBeat++;
     }
 
-    // Próximo ciclo de chequeo a 50ms
-    this.timerId = window.setTimeout(this.scheduleLoop, 50);
+    this.timerId = window.setTimeout(this.scheduleLoop, 45);
   };
 
-  // Cálculo del evento melódico según el beat actual acumulado
-  private playMelodyStep(currentBeat: number, time: number, secondsPerBeat: number) {
-    if (!this.ctx || !this.masterGain) return;
+  // =========================================================================
+  // RENDERIZADOR TRACK 1: MARCHA DE LAS MALVINAS
+  // =========================================================================
+  private renderMarchaStep(beat: number, time: number, secondsPerBeat: number) {
+    // 1. Percusión militar (Bombo en 1 y 3, caja / redoble en 2 y 4)
+    const barBeat = beat % 4;
+    if (barBeat === 0 || barBeat === 2) {
+      this.playKick(time, 0.22);
+    } else {
+      this.playSnare(time, 0.14);
+    }
 
-    // Calcular la duración total de la melodía en beats
-    const totalMelodyBeats = this.melodyScore.reduce((acc, step) => acc + step.duration, 0);
-    const loopBeat = currentBeat % totalMelodyBeats;
+    // 2. Línea de bajo arpegiada estilo 80s
+    const barIndex = Math.floor(beat / 4) % this.marchaChords.length;
+    const harm = this.marchaChords[barIndex];
+    const bassFreq = this.notes[harm.bass] || 87.31;
+    this.playBassNote(bassFreq, time, secondsPerBeat * 0.45);
+    this.playBassNote(bassFreq * 2, time + secondsPerBeat * 0.5, secondsPerBeat * 0.40);
 
-    let accumulatedBeats = 0;
-    for (const step of this.melodyScore) {
-      if (loopBeat >= accumulatedBeats && loopBeat < accumulatedBeats + 0.99) {
-        if (Math.abs(loopBeat - accumulatedBeats) < 0.05 && step.note) {
+    // 3. Colchón armónico analógico
+    if (barBeat === 0) {
+      this.playChordPad(harm.chord, time, secondsPerBeat * 3.85);
+    }
+
+    // 4. Melodía auténtica y nítida de la Marcha
+    const totalBeats = this.marchaScore.reduce((acc, s) => acc + s.duration, 0);
+    const loopBeat = beat % totalBeats;
+
+    let accum = 0;
+    for (const step of this.marchaScore) {
+      if (loopBeat >= accum && loopBeat < accum + 0.99) {
+        if (Math.abs(loopBeat - accum) < 0.05 && step.note) {
           const freq = this.notes[step.note];
           if (freq) {
             this.playLeadSynth(freq, time, step.duration * secondsPerBeat);
@@ -266,11 +292,59 @@ export class MalvinasBgmEngine {
         }
         break;
       }
-      accumulatedBeats += step.duration;
+      accum += step.duration;
     }
   }
 
-  // Sintetizador Líder (Lead 80s: Pulse + Triángulo con filtro resonante y vibrato)
+  // =========================================================================
+  // RENDERIZADOR TRACK 2: DARK SYNTH 1982 / DRON TÁCTICO MILITAR
+  // =========================================================================
+  private renderDronStep(beat: number, time: number, secondsPerBeat: number) {
+    const barIndex = Math.floor(beat / 4) % this.dronChords.length;
+    const harm = this.dronChords[barIndex];
+    const barBeat = beat % 4;
+
+    // 1. Pulso de latido sub-grave táctico (Heartbeat de sonar cada 2 beats)
+    if (barBeat === 0 || barBeat === 2) {
+      this.playSubPulse(time, 0.28);
+    }
+
+    // 2. Ping de Sonar Naval de Submarino (cada 8 beats)
+    if (beat % 8 === 0) {
+      this.playSonarPing(time);
+    }
+
+    // 3. Dron armónico continuo analógico de guerra fría
+    if (barBeat === 0) {
+      this.playDarkDrone(harm.chord, time, secondsPerBeat * 3.9);
+    }
+
+    // 4. Arpegio hipnótico estilo John Carpenter / Vangelis en semicorcheas
+    const subStep = secondsPerBeat / 4;
+    const root = harm.root;
+    const arpeggioNotes = root === 'D' 
+      ? ['D3', 'F3', 'A3', 'D4', 'F4', 'D4', 'A3', 'F3']
+      : root === 'Bb'
+      ? ['Bb2', 'D3', 'F3', 'Bb3', 'D4', 'Bb3', 'F3', 'D3']
+      : root === 'A'
+      ? ['A2', 'Csharp3', 'E3', 'A3', 'Csharp4', 'A3', 'E3', 'Csharp3']
+      : ['G2', 'Bb2', 'D3', 'G3', 'Bb3', 'G3', 'D3', 'Bb2'];
+
+    for (let i = 0; i < 4; i++) {
+      const noteIndex = (barBeat * 4 + i) % arpeggioNotes.length;
+      const noteName = arpeggioNotes[noteIndex];
+      const freq = this.notes[noteName];
+      if (freq) {
+        this.playTenseArp(freq, time + i * subStep, subStep * 0.85);
+      }
+    }
+  }
+
+  // =========================================================================
+  // INSTRUMENTOS ANALÓGICOS PROCEDURALES
+  // =========================================================================
+
+  // Lead de la Marcha de las Malvinas (Nítido, solemne, con presencia y brillo de los 80)
   private playLeadSynth(freq: number, time: number, duration: number) {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
 
@@ -279,29 +353,28 @@ export class MalvinasBgmEngine {
     const filter = this.ctx.createBiquadFilter();
     const noteGain = this.ctx.createGain();
 
-    // Timbre épico analógico
+    // Dientes de sierra + Cuadrada con armónicos para definición melódica total
     osc1.type = 'sawtooth';
     osc1.frequency.setValueAtTime(freq, time);
 
     osc2.type = 'square';
-    osc2.frequency.setValueAtTime(freq * 1.002, time); // Ligero detune para grosor coral
+    osc2.frequency.setValueAtTime(freq * 1.0025, time); // Coro analógico
 
-    // Filtro pasa bajos militar clásico
+    // Filtro analógico brillante y resonante
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2200, time);
-    filter.frequency.exponentialRampToValueAtTime(1100, time + duration);
-    filter.Q.setValueAtTime(2.2, time);
+    filter.frequency.setValueAtTime(2800, time);
+    filter.frequency.exponentialRampToValueAtTime(1400, time + duration);
+    filter.Q.setValueAtTime(2.4, time);
 
-    // Envolvente ADSR
-    const attack = 0.03;
-    const decay = 0.10;
-    const sustainLevel = 0.16;
-    const release = 0.15;
+    const attack = 0.02;
+    const decay = 0.08;
+    const sustain = 0.22;
+    const release = 0.12;
 
     noteGain.gain.setValueAtTime(0.0001, time);
-    noteGain.gain.linearRampToValueAtTime(0.24, time + attack);
-    noteGain.gain.linearRampToValueAtTime(sustainLevel, time + attack + decay);
-    noteGain.gain.setValueAtTime(sustainLevel, time + Math.max(attack + decay, duration - release));
+    noteGain.gain.linearRampToValueAtTime(0.30, time + attack);
+    noteGain.gain.linearRampToValueAtTime(sustain, time + attack + decay);
+    noteGain.gain.setValueAtTime(sustain, time + Math.max(attack + decay, duration - release));
     noteGain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
 
     osc1.connect(filter);
@@ -315,7 +388,7 @@ export class MalvinasBgmEngine {
     osc2.stop(time + duration + 0.05);
   }
 
-  // Sintetizador de Bajo (Bass 80s: Moog / Roland Juno Style)
+  // Bajo analógico Juno de los 80
   private playBassNote(freq: number, time: number, duration: number) {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
 
@@ -327,11 +400,11 @@ export class MalvinasBgmEngine {
     osc.frequency.setValueAtTime(freq, time);
 
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(450, time);
-    filter.frequency.exponentialRampToValueAtTime(140, time + duration);
-    filter.Q.setValueAtTime(3.0, time);
+    filter.frequency.setValueAtTime(500, time);
+    filter.frequency.exponentialRampToValueAtTime(160, time + duration);
+    filter.Q.setValueAtTime(3.2, time);
 
-    gain.gain.setValueAtTime(0.22, time);
+    gain.gain.setValueAtTime(0.24, time);
     gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
 
     osc.connect(filter);
@@ -342,7 +415,7 @@ export class MalvinasBgmEngine {
     osc.stop(time + duration);
   }
 
-  // Colchón de cuerdas/sintetizador analógico (Pad de fondo)
+  // Colchón armónico analógico
   private playChordPad(chordNotes: string[], time: number, duration: number) {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
 
@@ -359,11 +432,11 @@ export class MalvinasBgmEngine {
       osc.frequency.setValueAtTime(freq, time);
 
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(700, time);
+      filter.frequency.setValueAtTime(750, time);
 
       gain.gain.setValueAtTime(0.001, time);
-      gain.gain.linearRampToValueAtTime(0.05, time + 0.4);
-      gain.gain.setValueAtTime(0.05, time + duration - 0.4);
+      gain.gain.linearRampToValueAtTime(0.055, time + 0.35);
+      gain.gain.setValueAtTime(0.055, time + duration - 0.35);
       gain.gain.linearRampToValueAtTime(0.001, time + duration);
 
       osc.connect(filter);
@@ -375,35 +448,139 @@ export class MalvinasBgmEngine {
     });
   }
 
-  // Percusión: Bombo de marcha (Kick 808 analógico profundo)
-  private playKick(time: number) {
+  // Dron oscuro continuo para la pantalla de juego
+  private playDarkDrone(chordNotes: string[], time: number, duration: number) {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+
+    chordNotes.forEach((noteName) => {
+      if (!this.ctx || !this.masterGain) return;
+      const freq = this.notes[noteName];
+      if (!freq) return;
+
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq * 0.5, time); // Una octava más abajo para peso
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(320, time);
+      filter.frequency.linearRampToValueAtTime(450, time + duration * 0.5);
+      filter.frequency.linearRampToValueAtTime(300, time + duration);
+      filter.Q.setValueAtTime(4.0, time);
+
+      gain.gain.setValueAtTime(0.001, time);
+      gain.gain.linearRampToValueAtTime(0.06, time + 0.6);
+      gain.gain.setValueAtTime(0.06, time + duration - 0.6);
+      gain.gain.linearRampToValueAtTime(0.001, time + duration);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(time);
+      osc.stop(time + duration);
+    });
+  }
+
+  // Arpegio tenso estilo John Carpenter / Stranger Things (Juego)
+  private playTenseArp(freq: number, time: number, duration: number) {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+
+    const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, time);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1200, time);
+    filter.Q.setValueAtTime(2.5, time);
+
+    gain.gain.setValueAtTime(0.0001, time);
+    gain.gain.linearRampToValueAtTime(0.08, time + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(time);
+    osc.stop(time + duration + 0.01);
+  }
+
+  // Sonar de Submarino / Radar en el mar de Malvinas (Tensión Diegética)
+  private playSonarPing(time: number) {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
 
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    osc.frequency.setValueAtTime(110, time);
-    osc.frequency.exponentialRampToValueAtTime(38, time + 0.12);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1480, time);
 
-    gain.gain.setValueAtTime(0.24, time);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+    gain.gain.setValueAtTime(0.0001, time);
+    gain.gain.linearRampToValueAtTime(0.09, time + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.2);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(time);
-    osc.stop(time + 0.16);
+    osc.stop(time + 1.25);
   }
 
-  // Percusión: Caja de marcha militar (Snare analógico con ruido blanco filtrado)
-  private playSnare(time: number) {
+  // Pulso cardíaco sub-grave (Juego)
+  private playSubPulse(time: number, vol: number) {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
 
-    const bufferSize = this.ctx.sampleRate * 0.12;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.frequency.setValueAtTime(65, time);
+    osc.frequency.exponentialRampToValueAtTime(32, time + 0.16);
+
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.20);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(time);
+    osc.stop(time + 0.22);
+  }
+
+  // Bombo de Marcha militar
+  private playKick(time: number, vol: number) {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.frequency.setValueAtTime(120, time);
+    osc.frequency.exponentialRampToValueAtTime(42, time + 0.14);
+
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.16);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(time);
+    osc.stop(time + 0.18);
+  }
+
+  // Caja de Marcha militar analógica
+  private playSnare(time: number, vol: number) {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+
+    const bufferSize = this.ctx.sampleRate * 0.14;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.28));
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.26));
     }
 
     const noise = this.ctx.createBufferSource();
@@ -411,12 +588,12 @@ export class MalvinasBgmEngine {
 
     const filter = this.ctx.createBiquadFilter();
     filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(1600, time);
-    filter.Q.setValueAtTime(1.8, time);
+    filter.frequency.setValueAtTime(1750, time);
+    filter.Q.setValueAtTime(1.9, time);
 
     const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0.12, time);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.14);
 
     noise.connect(filter);
     filter.connect(gain);
@@ -426,5 +603,4 @@ export class MalvinasBgmEngine {
   }
 }
 
-// Instancia singleton para toda la aplicación
 export const malvinasBgm = new MalvinasBgmEngine();
