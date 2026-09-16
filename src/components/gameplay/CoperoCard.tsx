@@ -27,7 +27,7 @@ export const CoperoCard: React.FC = () => {
   const progressPercent = Math.round(((currentStepIndex + 1) / campaign.length) * 100);
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-2 sm:p-4 overflow-y-auto font-mono-military select-none flex flex-col lg:flex-row items-start justify-center gap-3 sm:gap-4 pt-2 sm:pt-4 pb-28 sm:pb-20 min-h-full">
+    <div className="w-full max-w-7xl mx-auto p-2 sm:p-4 font-mono-military select-none flex flex-col lg:flex-row items-start justify-center gap-3 sm:gap-4 pt-4 sm:pt-6 pb-36 sm:pb-24 min-h-full">
       
       {/* Botón selector de mapa para celular */}
       <div className="w-full lg:hidden flex items-center justify-between p-2 bg-black/80 rounded border border-[var(--crt-dim,#1f6b30)] text-xs">

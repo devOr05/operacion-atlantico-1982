@@ -41,3 +41,22 @@ html, body, #root {
   transform: translateY(1px);
   background: rgba(85, 255, 119, 0.25);
 }
+
+/* Scrollbar táctico CRT para PC y navegadores */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(2, 6, 3, 0.85);
+  border-left: 1px solid var(--crt-dim, #1f6b30);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--crt-dim, #1f6b30);
+  border-radius: 2px;
+  border: 1px solid var(--crt-primary, #55ff77);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--crt-primary, #55ff77);
+  box-shadow: 0 0 8px var(--crt-primary, #55ff77);
+}

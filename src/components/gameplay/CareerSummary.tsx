@@ -58,8 +58,8 @@ export const CareerSummary: React.FC = () => {
   }
 
   return (
-    <div className="w-full flex items-start justify-center p-3 sm:p-6 overflow-y-auto font-mono-military select-none pt-4 pb-28 min-h-full">
-      <div className={`w-full max-w-2xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 ${cardBorder} mb-8`}>
+    <div className="w-full flex items-start justify-center p-3 sm:p-6 font-mono-military select-none pt-6 sm:pt-8 pb-36 sm:pb-32 min-h-full">
+      <div className={`w-full max-w-2xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 ${cardBorder} mb-4`}>
         
         {/* Cabecera de la Credencial */}
         <div className="text-center border-b border-[var(--crt-dim,#1f6b30)] pb-3 space-y-1">
