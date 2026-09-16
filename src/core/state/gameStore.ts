@@ -6,6 +6,7 @@ import { getMarCampaignByTier } from '../story/campaigns/marCampaign';
 import { getRankTierFromIndex } from '../story/campaigns/campaignTypes';
 import { submitGlobalRanking, incrementGlobalCombatientes } from '../../services/supabase';
 import { soundFx } from '../audio/soundEffects';
+import { malvinasBgm } from '../audio/malvinasBgm';
 
 export interface PlayerStats {
   coraje: number;        // 0-100: Temple bajo fuego
@@ -160,6 +161,7 @@ export interface CoperoGameState {
   crtMode: 'green' | 'amber' | 'cyan';
   scanlinesEnabled: boolean;
   isMuted: boolean;
+  isMusicPlaying: boolean;
   dossierOpen: boolean;
   mapModalOpen: boolean;
 }
@@ -194,6 +196,7 @@ const INITIAL_STATE: CoperoGameState = {
   crtMode: 'green',
   scanlinesEnabled: true,
   isMuted: false,
+  isMusicPlaying: false,
   dossierOpen: false,
   mapModalOpen: false
 };
@@ -419,7 +422,22 @@ export const gameStore = {
 
   toggleMute: () => {
     const isMuted = soundFx.toggleMute();
+    malvinasBgm.setMuted(isMuted);
     state = { ...state, isMuted };
+    emitChange();
+  },
+
+  toggleMusic: () => {
+    soundFx.playSwitchClick();
+    const isPlaying = malvinasBgm.toggle();
+    state = { ...state, isMusicPlaying: isPlaying };
+    emitChange();
+  },
+
+  startMusic: () => {
+    malvinasBgm.start();
+    malvinasBgm.setMuted(state.isMuted);
+    state = { ...state, isMusicPlaying: true };
     emitChange();
   },
 

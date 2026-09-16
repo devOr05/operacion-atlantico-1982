@@ -7,10 +7,32 @@ import { CareerSummary } from './components/gameplay/CareerSummary';
 import { RankingScreen } from './components/ranking/RankingScreen';
 import { DossierModal } from './components/teletype/DossierModal';
 import { TacticalMapModal } from './components/map/TacticalMapModal';
-import { useGameStore } from './core/state/gameStore';
+import { useGameStore, gameStore } from './core/state/gameStore';
 
 export const App: React.FC = () => {
   const { stage } = useGameStore();
+
+  React.useEffect(() => {
+    let started = false;
+    const handleFirstInteraction = () => {
+      if (started) return;
+      started = true;
+      gameStore.startMusic();
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+
+    window.addEventListener('click', handleFirstInteraction, { once: true });
+    window.addEventListener('keydown', handleFirstInteraction, { once: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, []);
 
   return (
     <CrtScreen>

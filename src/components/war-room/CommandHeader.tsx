@@ -3,6 +3,7 @@ import {
   Radio, 
   Volume2, 
   VolumeX, 
+  Music,
   BookOpen, 
   Compass 
 } from 'lucide-react';
@@ -84,6 +85,20 @@ export const CommandHeader: React.FC = () => {
           }`}
         >
           {state.isMuted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+        </button>
+
+        {/* Música de Fondo: Marcha de las Malvinas */}
+        <button
+          onClick={() => gameStore.toggleMusic()}
+          title={state.isMusicPlaying && !state.isMuted ? 'Pausar Marcha de las Malvinas' : 'Reproducir Marcha de las Malvinas'}
+          className={`flex items-center gap-1 px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs rounded border transition-all ${
+            state.isMusicPlaying && !state.isMuted
+              ? 'border-yellow-400/80 bg-yellow-950/40 text-yellow-300 shadow-[0_0_10px_rgba(250,204,21,0.35)]'
+              : 'border-zinc-800 bg-black/60 text-zinc-500 hover:text-zinc-300 hover:border-zinc-600'
+          }`}
+        >
+          <Music className={`w-3 h-3 ${state.isMusicPlaying && !state.isMuted ? 'animate-bounce text-yellow-400' : ''}`} />
+          <span className="hidden md:inline font-bold">MÚSICA</span>
         </button>
 
         {/* Botón de Mapa Radar TOAS */}
