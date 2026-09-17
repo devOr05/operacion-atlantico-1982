@@ -14,13 +14,16 @@ export const App: React.FC = () => {
   const { stage } = useGameStore();
 
   // Gestión de audio según la pantalla:
-  // - Bienvenida ('creation') y Ranking final ('ranking') -> Marcha de las Malvinas
+  // - Bienvenida ('creation') -> Marcha de las Malvinas (Solemne / Épica)
   // - Partida de combate táctico ('playing') -> Dron Táctico Dark Synth 1982
+  // - Pantalla final de ranking ('ranking') y resumen ('summary') -> Opción 4: Orquestal / Réquiem de Guerra Cinemático
   React.useEffect(() => {
-    if (stage === 'creation' || stage === 'ranking' || stage === 'summary') {
+    if (stage === 'creation') {
       malvinasBgm.setTrack('marcha');
     } else if (stage === 'playing') {
       malvinasBgm.setTrack('dron');
+    } else if (stage === 'ranking' || stage === 'summary') {
+      malvinasBgm.setTrack('requiem');
     }
   }, [stage]);
 
