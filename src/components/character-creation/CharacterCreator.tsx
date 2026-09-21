@@ -122,11 +122,18 @@ export const CharacterCreator: React.FC = () => {
       <div className="w-full max-w-3xl bg-[#030905] tactical-border rounded-lg shadow-2xl p-4 sm:p-6 space-y-4 border-2 border-[var(--crt-dim,#1f6b30)] mb-4">
         
         {/* Cabecera */}
-        <div className="border-b border-[var(--crt-dim,#1f6b30)] pb-2 text-center">
-          <h1 className="text-xl sm:text-3xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
+        <div className="border-b border-[var(--crt-dim,#1f6b30)] pb-3 flex flex-col items-center justify-center text-center">
+          <div className="flex items-center justify-center mb-2.5">
+            <img 
+              src="/radar.svg" 
+              alt="Logo Héroes del Atlántico 1982" 
+              className="w-16 h-16 sm:w-20 sm:h-20 object-contain mx-auto drop-shadow-[0_0_15px_var(--crt-glow)]" 
+            />
+          </div>
+          <h1 className="text-xl sm:text-3xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text text-center">
             HÉROES DEL ATLÁNTICO 1982
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-zinc-400 mt-0.5 text-center">
             Simulador Táctico y de Decisiones de la Guerra de Malvinas
           </p>
         </div>

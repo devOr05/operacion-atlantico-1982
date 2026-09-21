@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  Radio, 
   Volume2, 
   VolumeX, 
   Music,
@@ -17,8 +16,8 @@ export const CommandHeader: React.FC = () => {
     <header className="h-11 sm:h-12 min-h-[44px] border-b border-[var(--crt-dim,#1f6b30)] bg-[rgba(3,10,5,0.95)] px-2 sm:px-3 flex items-center justify-between gap-1 sm:gap-2 select-none font-mono-military shrink-0 z-30">
       {/* Título y estado de la consola */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-        <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded border border-[var(--crt-primary,#55ff77)] bg-[rgba(85,255,119,0.1)] glow-border shrink-0">
-          <Radio className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--crt-primary,#55ff77)] animate-pulse" />
+        <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded border border-[var(--crt-primary,#55ff77)] bg-[rgba(85,255,119,0.1)] glow-border shrink-0 p-0.5 overflow-hidden">
+          <img src="/radar.svg" alt="Radar 1982" className="w-full h-full object-contain drop-shadow-[0_0_6px_var(--crt-glow)]" />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
