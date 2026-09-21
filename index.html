@@ -5,6 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/radar.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#0a1a0f" />
+        <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="description" content="Héroes del Atlántico 1982 - Simulador de carrera militar, decisiones tácticas y supervivencia en la Guerra de Malvinas" />
@@ -17,5 +21,67 @@
   <body class="bg-[#050b07] text-[#55ff77] select-none overflow-x-hidden m-0 p-0">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
+  
+    <!-- Military Floating Install Banner -->
+    <div id="pwa-install-banner" style="display:none; position:fixed; bottom:20px; left:16px; right:16px; max-width:420px; margin:0 auto; z-index:9999; background:rgba(5,11,7,0.95); border:1px solid #39b54a; padding:12px 16px; border-radius:12px; box-shadow:0 0 20px rgba(57,181,74,0.3); backdrop-filter:blur(10px); align-items:center; justify-content:space-between; gap:12px; font-family:'Share Tech Mono', monospace, sans-serif;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <img src="/icons/icon-192.png" alt="Radar 1982" style="width:42px; height:42px; border-radius:8px; border:1px solid #39b54a;">
+            <div>
+                <div style="font-size:14px; font-weight:bold; color:#55ff77; line-height:1.2; letter-spacing:1px;">INSTALAR HÉROES 1982</div>
+                <div style="font-size:11px; color:#2ecc71;">Radar táctico en pantalla</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button id="pwa-install-btn" style="background:#1b5a26; color:#55ff77; border:1px solid #39b54a; padding:7px 14px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer; font-family:inherit; letter-spacing:1px;">INSTALAR</button>
+            <button id="pwa-install-close" style="background:transparent; color:#55ff77; border:none; font-size:16px; cursor:pointer; padding:4px;">✕</button>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => {
+                        console.log('Heroes 1982 SW registrado:', reg.scope);
+                        reg.update();
+                    })
+                    .catch(err => console.log('SW falló:', err));
+            });
+        }
+
+        let deferredPrompt = null;
+        const installBanner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const installClose = document.getElementById('pwa-install-close');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installBanner) installBanner.style.display = 'flex';
+        });
+
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('User choice:', outcome);
+                    deferredPrompt = null;
+                }
+                if (installBanner) installBanner.style.display = 'none';
+            });
+        }
+
+        if (installClose) {
+            installClose.addEventListener('click', () => {
+                if (installBanner) installBanner.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            if (installBanner) installBanner.style.display = 'none';
+        });
+    </script>
+</body>
 </html>
