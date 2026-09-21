@@ -10,7 +10,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'icons/*.png'],
+      injectRegister: null,
+      includeAssets: ['favicon.ico', 'icons/*.png', 'radar.svg'],
       manifest: {
         name: 'Héroes del Atlántico 1982 - Convertite en Leyenda',
         short_name: 'Héroes 1982',
@@ -47,7 +48,10 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,mp3,wav}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,mp3,wav}'],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true
       }
     })
   ]

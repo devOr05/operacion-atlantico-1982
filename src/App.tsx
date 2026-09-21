@@ -7,6 +7,7 @@ import { CareerSummary } from './components/gameplay/CareerSummary';
 import { RankingScreen } from './components/ranking/RankingScreen';
 import { DossierModal } from './components/teletype/DossierModal';
 import { TacticalMapModal } from './components/map/TacticalMapModal';
+import { PwaUpdater } from './components/pwa/PwaUpdater';
 import { useGameStore, gameStore } from './core/state/gameStore';
 import { malvinasBgm } from './core/audio/malvinasBgm';
 
@@ -77,6 +78,9 @@ export const App: React.FC = () => {
 
         {/* Modal de Mapa Táctico Radar 1982 */}
         <TacticalMapModal />
+
+        {/* Gestor y Notificador de Actualizaciones PWA */}
+        <PwaUpdater />
       </div>
     </CrtScreen>
   );

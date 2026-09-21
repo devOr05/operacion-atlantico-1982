@@ -8,10 +8,12 @@ import {
 } from 'lucide-react';
 import { useGameStore, gameStore } from '../../core/state/gameStore';
 import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
+import { getHistoricalMissionById } from '../../core/story/campaigns/historicalMissions';
 
 export const CareerSummary: React.FC = () => {
-  const { player, warOutcome, casualtyReason } = useGameStore();
+  const { player, warOutcome, casualtyReason, gameMode, selectedMissionId } = useGameStore();
   const currentRank = RANKS_BY_BRANCH[player.branch][player.currentRankIndex];
+  const activeMission = gameMode === 'historical' && selectedMissionId ? getHistoricalMissionById(selectedMissionId) : null;
 
   let title = 'LA CAÍDA DE PUERTO ARGENTINO (14 DE JUNIO)';
   let description = 'Tras 74 días de encarnizada resistencia en condiciones infrahumanas, con el combustible y la munición agotados, cesaron los fuegos en las islas. Regresas al continente con la frente en alto y el respeto de la patria.';
@@ -52,6 +54,13 @@ export const CareerSummary: React.FC = () => {
           <h1 className="text-lg sm:text-2xl font-bold font-chakra uppercase text-[var(--crt-primary,#55ff77)] glow-text">
             {title}
           </h1>
+          {activeMission && (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber-950/60 border border-amber-500 text-amber-300 text-xs font-bold uppercase tracking-wider">
+              <span>{activeMission.badge}</span>
+              <span>MISIÓN: {activeMission.title}</span>
+              <span className="text-[10px] text-amber-400/80 font-normal not-italic">• Hecho Histórico 1982</span>
+            </div>
+          )}
           <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed max-w-xl mx-auto">
             {description}
           </p>

@@ -12,13 +12,15 @@ import {
 import { TacticalMap } from '../map/TacticalMap';
 import { useGameStore, gameStore, getCurrentCampaign } from '../../core/state/gameStore';
 import { RANKS_BY_BRANCH } from '../../core/story/militaryRanks';
+import { getHistoricalMissionById } from '../../core/story/campaigns/historicalMissions';
 
 export const CoperoCard: React.FC = () => {
   const state = useGameStore();
-  const { player, currentStepIndex, lastReaction, lastStatChanges } = state;
+  const { player, currentStepIndex, lastReaction, lastStatChanges, gameMode, selectedMissionId } = state;
   const [showMobileMap, setShowMobileMap] = React.useState<boolean>(false);
-  const campaign = getCurrentCampaign(player.branch, player.initialRankIndex);
+  const campaign = getCurrentCampaign(player.branch, player.initialRankIndex, gameMode, selectedMissionId);
   const currentStep = campaign[currentStepIndex];
+  const activeMission = gameMode === 'historical' && selectedMissionId ? getHistoricalMissionById(selectedMissionId) : null;
 
   if (!currentStep) return null;
 
@@ -150,6 +152,19 @@ export const CoperoCard: React.FC = () => {
         <div className="w-full bg-zinc-900 h-1 rounded-full overflow-hidden">
           <div className="bg-[var(--crt-primary,#55ff77)] h-full transition-all" style={{ width: `${progressPercent}%` }} />
         </div>
+
+        {/* Banner de Operación Histórica */}
+        {activeMission && (
+          <div className="flex items-center justify-between p-2 rounded bg-amber-950/40 border border-amber-500/40 text-[11px] text-amber-300">
+            <div className="flex items-center gap-2 font-bold uppercase tracking-wider">
+              <span className="text-base">{activeMission.badge}</span>
+              <span>OPERACIÓN HISTÓRICA: {activeMission.title}</span>
+            </div>
+            <span className="text-[10px] text-amber-400/90 italic font-mono hidden sm:inline">
+              Relato Histórico Real
+            </span>
+          </div>
+        )}
 
         {/* Tarjeta de la Situación Actual */}
         <div className="bg-black/80 p-3 sm:p-4 rounded border border-[var(--crt-dim,#1f6b30)] space-y-2">

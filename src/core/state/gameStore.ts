@@ -4,6 +4,7 @@ import { getTierraCampaignByTier } from '../story/campaigns/tierraCampaign';
 import { getAireCampaignByTier } from '../story/campaigns/aireCampaign';
 import { getMarCampaignByTier } from '../story/campaigns/marCampaign';
 import { getRankTierFromIndex } from '../story/campaigns/campaignTypes';
+import { getHistoricalMissionById } from '../story/campaigns/historicalMissions';
 import { submitGlobalRanking, incrementGlobalCombatientes } from '../../services/supabase';
 import { soundFx } from '../audio/soundEffects';
 import { malvinasBgm } from '../audio/malvinasBgm';
@@ -152,6 +153,8 @@ export function saveRankingEntry(entry: RankingEntry) {
 
 export interface CoperoGameState {
   stage: GameStage;
+  gameMode: 'standard' | 'historical';
+  selectedMissionId: string | null;
   player: PlayerProfile;
   currentStepIndex: number;
   lastReaction: string | null;
@@ -187,6 +190,8 @@ const DEFAULT_PLAYER: PlayerProfile = {
 
 const INITIAL_STATE: CoperoGameState = {
   stage: 'creation',
+  gameMode: 'standard',
+  selectedMissionId: null,
   player: { ...DEFAULT_PLAYER },
   currentStepIndex: 0,
   lastReaction: null,
@@ -208,7 +213,18 @@ function emitChange() {
   listeners.forEach((listener) => listener());
 }
 
-export function getCurrentCampaign(branch: MilitaryBranch, rankIndex: number = 0) {
+export function getCurrentCampaign(
+  branch: MilitaryBranch,
+  rankIndex: number = 0,
+  gameMode: 'standard' | 'historical' = 'standard',
+  missionId?: string | null
+) {
+  if (gameMode === 'historical' && missionId) {
+    const historical = getHistoricalMissionById(missionId);
+    if (historical) {
+      return historical.steps;
+    }
+  }
   const tier = getRankTierFromIndex(rankIndex);
   if (branch === 'aire') return getAireCampaignByTier(tier);
   if (branch === 'mar') return getMarCampaignByTier(tier);
@@ -257,6 +273,8 @@ export const gameStore = {
     state = {
       ...state,
       stage: 'playing',
+      gameMode: 'standard',
+      selectedMissionId: null,
       currentStepIndex: 0,
       lastReaction: null,
       lastStatChanges: null,
@@ -284,8 +302,55 @@ export const gameStore = {
     emitChange();
   },
 
+  startNewGameWithHistoricalMission: (
+    missionId: string,
+    customName?: string,
+    customNickname?: string
+  ) => {
+    const mission = getHistoricalMissionById(missionId);
+    if (!mission) return;
+    soundFx.playCommandConfirm();
+    incrementGlobalCombatientes().catch(() => {});
+
+    state = {
+      ...state,
+      stage: 'playing',
+      gameMode: 'historical',
+      selectedMissionId: missionId,
+      currentStepIndex: 0,
+      lastReaction: null,
+      lastStatChanges: null,
+      warOutcome: null,
+      casualtyReason: null,
+      player: {
+        name: customName?.trim() || mission.protagonist,
+        nickname: customNickname?.trim() || mission.nickname || 'El Héroe',
+        province: 'Malvinas 1982',
+        branch: mission.branch,
+        startLevel: 'primera_linea',
+        initialRankIndex: mission.initialRankIndex,
+        currentRankIndex: mission.initialRankIndex,
+        stats: {
+          coraje: 70,
+          salud: 50,
+          pericia: 65,
+          liderazgo: 55,
+          impactoGuerra: 25
+        },
+        medals: [],
+        history: []
+      }
+    };
+    emitChange();
+  },
+
   makeDecision: (choiceIndex: number) => {
-    const campaign = getCurrentCampaign(state.player.branch, state.player.initialRankIndex);
+    const campaign = getCurrentCampaign(
+      state.player.branch,
+      state.player.initialRankIndex,
+      state.gameMode,
+      state.selectedMissionId
+    );
     const step = campaign[state.currentStepIndex];
     if (!step) return;
 
@@ -346,16 +411,26 @@ export const gameStore = {
       casualtyMsg = 'Relevado de tus funciones en el frente por quiebre de disciplina y deserción ante el fuego enemigo.';
     } else if (nextStepIndex >= campaign.length) {
       isGameOver = true;
-      if (newStats.salud <= 20) {
-        outcome = 'evacuado_herido';
-      } else if (newStats.impactoGuerra >= 70 && newStats.pericia >= 70) {
-        outcome = 'victoria_total';
-      } else if (newStats.impactoGuerra >= 45) {
-        outcome = 'armisticio_honroso';
-      } else if (newStats.liderazgo <= 20) {
-        outcome = 'prisionero_guerra';
+      if (state.gameMode === 'historical') {
+        if (newStats.salud <= 20) {
+          outcome = 'evacuado_herido';
+        } else if (newStats.coraje >= 50 && newStats.pericia >= 50) {
+          outcome = 'victoria_total';
+        } else {
+          outcome = 'armisticio_honroso';
+        }
       } else {
-        outcome = 'derrota_historica';
+        if (newStats.salud <= 20) {
+          outcome = 'evacuado_herido';
+        } else if (newStats.impactoGuerra >= 70 && newStats.pericia >= 70) {
+          outcome = 'victoria_total';
+        } else if (newStats.impactoGuerra >= 45) {
+          outcome = 'armisticio_honroso';
+        } else if (newStats.liderazgo <= 20) {
+          outcome = 'prisionero_guerra';
+        } else {
+          outcome = 'derrota_historica';
+        }
       }
     }
 
